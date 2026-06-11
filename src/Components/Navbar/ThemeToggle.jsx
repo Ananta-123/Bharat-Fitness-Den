@@ -1,13 +1,10 @@
 import { Moon, Sun } from "lucide-react";
-
 import { useTheme } from "next-themes";
-
 import { useEffect, useState } from "react";
-
 import { motion } from "framer-motion";
 
 const ThemeToggle = () => {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
 
@@ -15,73 +12,52 @@ const ThemeToggle = () => {
     setMounted(true);
   }, []);
 
-  // PREVENT HYDRATION SHIFT
   if (!mounted) {
     return (
       <div
         className="
           h-11 w-11
-
           rounded-2xl
-
           border
           border-orange-300
           dark:border-orange-500/20
-
           bg-white
           dark:bg-[#111827]
-
-          shadow-lg
-          shadow-black/5
-          dark:shadow-black/30
         "
       />
     );
   }
 
+  const isDark = resolvedTheme === "dark";
+
   return (
     <motion.button
-      whileHover={{
-        scale: 1.05,
-      }}
-      whileTap={{
-        scale: 0.9,
-      }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.9 }}
       onClick={() =>
-        setTheme(
-          theme === "dark"
-            ? "light"
-            : "dark"
-        )
+        setTheme(isDark ? "light" : "dark")
       }
       className="
         h-11 w-11
-
         rounded-2xl
-
         border
         border-orange-300
         dark:border-orange-500/20
-
         bg-white
         dark:bg-[#111827]
-
         flex items-center justify-center
-
         shadow-lg
         shadow-black/5
         dark:shadow-black/30
-
         hover:border-orange-500/40
-
         transition-all duration-300
       "
     >
-      {theme === "dark" ? (
+      {isDark ? (
         <Sun
           size={20}
           strokeWidth={2.5}
-          className="text-orange-600"
+          className="text-orange-500"
         />
       ) : (
         <Moon
