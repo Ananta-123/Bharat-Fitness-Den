@@ -97,10 +97,9 @@ const Sidebar = ({
 
           md:translate-x-0
 
-          ${
-            mobileOpen
-              ? "translate-x-0"
-              : "-translate-x-full md:translate-x-0"
+          ${mobileOpen
+            ? "translate-x-0"
+            : "-translate-x-full md:translate-x-0"
           }
         `}
       >
@@ -122,76 +121,120 @@ const Sidebar = ({
         >
           {/* LOGO */}
           <div className="flex items-center gap-3 overflow-hidden">
-            <img
-              src="https://res.cloudinary.com/dl58sdjnk/image/upload/v1781027063/ChatGPT_Image_Jun_9_2026_11_13_48_PM_cpas14.png"
-              alt="logo"
-              className="w-12 h-12 object-contain shrink-0"
-            />
+            {/* LOGO */}
+            <div
+              className="
+      flex items-center justify-center
+      shrink-0
+    "
+            >
+              <img
+                src="https://res.cloudinary.com/dl58sdjnk/image/upload/v1781027063/ChatGPT_Image_Jun_9_2026_11_13_48_PM_cpas14.png"
+                alt="logo"
+                className="
+        w-14 h-14
+        object-contain
 
+        scale-125
+
+        transition-all duration-300
+      "
+              />
+            </div>
+
+            {/* BRAND TEXT */}
             {!collapsed && (
-              <div>
+              <div className="leading-none">
+                {/* BHARAT */}
+                <h1
+                  className="
+          text-xl
+    font-extrabold
+    tracking-[0.32em]
+    uppercase
+
+    bg-gradient-to-r
+    from-[#8B0000]
+    to-[#F96B00]
+
+    bg-clip-text
+    text-transparent
+
+    drop-shadow-[0_0_8px_rgba(249,107,0,0.35)]
+        "
+                >
+                  BHARAT
+                </h1>
+
+                {/* FITNESS DEN */}
                 <h2
                   className="
-                    text-lightText
-                    dark:text-darkText
+          mt-1
 
-                    font-bold
-                    text-lg
+          text-sm
+          font-semibold
+          tracking-[0.2em]
 
-                    whitespace-nowrap
+          text-lightText
+          dark:text-darkText
 
-                    transition-colors duration-300
-                  "
+          transition-colors duration-300
+        "
                 >
                   FITNESS DEN
                 </h2>
 
-                <p
-                  className="
-                    text-lightTextSoft
-                    dark:text-darkTextSoft
-
-                    text-xs
-
-                    transition-colors duration-300
-                  "
-                >
-                  Admin Panel
-                </p>
+                
               </div>
             )}
           </div>
 
           {/* DESKTOP COLLAPSE BUTTON */}
           <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="
-              hidden md:flex
+  onClick={() => setCollapsed(!collapsed)}
+  className={`
+  hidden md:flex
 
-              items-center justify-center
+  absolute
+  top-1/2
+  right-[-16px]
+  -translate-y-1/2
 
-              p-2
-              rounded-full
+  items-center justify-center
 
-              bg-gradient-to-r
-              from-[#8B0000]
-              to-[#F96B00]
+  rounded-full
 
-              text-white
+  bg-gradient-to-r
+  from-[#8B0000]
+  to-[#F96B00]
 
-              shadow-lg
-              shadow-orange-500/20
+  text-white
 
-              hover:scale-105
+  shadow-xl
+  shadow-orange-500/30
 
-              transition-all duration-300
-            "
-          >
+  border-4
+  border-lightBg
+  dark:border-darkBg
+
+  hover:scale-105
+
+  transition-all duration-300
+
+  z-50
+
+  ${
+    collapsed
+      ? "h-8 w-8"
+      : "h-10 w-10"
+  }
+`}
+>
             {collapsed ? (
-              <ChevronRight size={18} />
-            ) : (
-              <ChevronLeft size={18} />
-            )}
+  <ChevronRight size={14} />
+) : (
+  <ChevronLeft size={18} />
+)}
           </button>
 
           {/* MOBILE CLOSE BUTTON */}
@@ -249,34 +292,85 @@ const Sidebar = ({
               transition-all duration-300
             "
           >
-            <h3
-              className="
-                text-lightText
-                dark:text-darkText
+            {collapsed ? (
+  <div
+    className="
+      flex flex-col
+      items-center
+      justify-center
 
-                font-semibold
+      leading-none
+      text-center
+    "
+  >
+    <span
+      className="
+        text-sm
+        font-extrabold
 
-                transition-colors duration-300
-              "
-            >
-              PRO PLAN ACTIVE
-            </h3>
+        bg-gradient-to-r
+        from-[#8B0000]
+        to-[#F96B00]
 
-            {!collapsed && (
-              <p
-                className="
-                  mt-1
-                  text-sm
+        bg-clip-text
+        text-transparent
 
-                  text-lightTextSoft
-                  dark:text-darkTextSoft
+        uppercase
+      "
+    >
+      PRO
+    </span>
 
-                  transition-colors duration-300
-                "
-              >
-                All premium features unlocked
-              </p>
-            )}
+    <span
+      className="
+        mt-1
+
+        text-sm
+        font-extrabold
+
+        bg-gradient-to-r
+        from-[#8B0000]
+        to-[#F96B00]
+
+        bg-clip-text
+        text-transparent
+
+        uppercase
+      "
+    >
+      PLAN
+    </span>
+  </div>
+) : (
+  <>
+    <h3
+      className="
+        text-lightText
+        dark:text-darkText
+
+        font-semibold
+
+        transition-colors duration-300
+      "
+    >
+      PRO PLAN ACTIVE
+    </h3>
+
+    <p
+      className="
+        mt-1
+        text-sm
+
+        text-lightTextSoft
+        dark:text-darkTextSoft
+
+        transition-colors duration-300
+      "
+    >
+      All premium features unlocked
+    </p>
+  </>
+)}
           </div>
         </div>
       </motion.aside>
