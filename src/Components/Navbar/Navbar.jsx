@@ -1,6 +1,6 @@
 import {
   Bell,
-  Search,
+  
   Menu,
 } from "lucide-react";
 
@@ -15,9 +15,7 @@ const Navbar = ({ setMobileOpen }) => {
         sticky top-0 z-30
         h-20
 
-        border-b
-        border-gray-200
-        dark:border-[#1B2440]
+        
 
         bg-white/95
         dark:bg-[#060816]/95
@@ -42,12 +40,10 @@ const Navbar = ({ setMobileOpen }) => {
             className="
               md:hidden
 
-              h-11 w-11
+              h-4 w-4
               rounded-xl
 
-              border
-              border-orange-300
-              dark:border-orange-500/20
+              
 
               bg-white
               dark:bg-[#111827]
@@ -56,9 +52,7 @@ const Navbar = ({ setMobileOpen }) => {
 
               flex items-center justify-center
 
-              shadow-lg
-              shadow-black/5
-              dark:shadow-black/30
+              
 
               transition-all duration-300
             "
@@ -100,59 +94,7 @@ const Navbar = ({ setMobileOpen }) => {
 
         {/* RIGHT */}
         <div className="flex items-center gap-3">
-          {/* SEARCH */}
-          <div
-            className="
-              hidden md:flex
-
-              items-center gap-3
-
-              h-11
-              w-[260px] lg:w-[340px]
-
-              rounded-2xl
-
-              border
-              border-orange-300
-              dark:border-orange-500/20
-
-              bg-white
-              dark:bg-[#111827]
-
-              px-4
-
-              shadow-lg
-              shadow-black/5
-              dark:shadow-black/30
-
-              transition-all duration-300
-            "
-          >
-            <Search
-              size={18}
-              className="text-[#F96B00]"
-            />
-
-            <input
-              type="text"
-              placeholder="Search..."
-              className="
-                w-full
-
-                bg-transparent
-                outline-none
-                border-none
-
-                text-sm
-
-                text-gray-900
-                dark:text-white
-
-                placeholder:text-gray-400
-                dark:placeholder:text-gray-500
-              "
-            />
-          </div>
+          
 
           {/* NOTIFICATION */}
           <motion.button
@@ -169,9 +111,7 @@ const Navbar = ({ setMobileOpen }) => {
 
               rounded-2xl
 
-              border
-              border-orange-300
-              dark:border-orange-500/20
+              
 
               bg-white
               dark:bg-[#111827]
@@ -180,9 +120,7 @@ const Navbar = ({ setMobileOpen }) => {
 
               text-[#F96B00]
 
-              shadow-lg
-              shadow-black/5
-              dark:shadow-black/30
+              
 
               transition-all duration-300
             "
@@ -222,9 +160,7 @@ const Navbar = ({ setMobileOpen }) => {
 
               rounded-2xl
 
-              border
-              border-orange-300
-              dark:border-orange-500/20
+             
 
               bg-white
               dark:bg-[#111827]
@@ -233,9 +169,7 @@ const Navbar = ({ setMobileOpen }) => {
 
               cursor-pointer
 
-              shadow-lg
-              shadow-black/5
-              dark:shadow-black/30
+              
 
               transition-all duration-300
             "

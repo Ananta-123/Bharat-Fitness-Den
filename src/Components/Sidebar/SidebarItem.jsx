@@ -16,10 +16,19 @@ const SidebarItem = ({ item, collapsed }) => {
             transition-all duration-300
             cursor-pointer group overflow-hidden
             
-            ${
-              isActive
-                ? "bg-gradient-to-r from-[#8B0000] to-[#F96B00] text-white shadow-lg shadow-orange-500/20"
-                : "text-gray-400 hover:bg-[#111111]"
+            ${isActive
+              ? "bg-gradient-to-r from-[#8B0000] to-[#F96B00] text-white shadow-lg shadow-orange-500/20"
+              : `
+      text-gray-400
+
+      hover:bg-gradient-to-r
+      hover:from-[#8B0000]/20
+      hover:to-[#F96B00]/20
+
+      hover:text-black
+dark:hover:text-white
+      
+    `
             }
           `}
         >

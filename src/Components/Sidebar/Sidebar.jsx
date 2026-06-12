@@ -31,16 +31,12 @@ const Sidebar = ({
           bg-lightCard
           dark:bg-darkCard
 
-          border
-          border-orange-300
-          dark:border-orange-500/20
+          
 
           text-lightText
           dark:text-darkText
 
-          shadow-lg
-          shadow-black/5
-          dark:shadow-black/30
+          
 
           transition-all duration-300
         "
@@ -83,15 +79,11 @@ const Sidebar = ({
           bg-lightBg
           dark:bg-darkBg
 
-          border-r
-          border-lightBorder
-          dark:border-darkBorder
+          
 
           flex flex-col
 
-          shadow-xl
-          shadow-black/5
-          dark:shadow-black/40
+          
 
           transition-colors duration-300
 
@@ -112,9 +104,7 @@ const Sidebar = ({
 
             px-5
 
-            border-b
-            border-lightBorder
-            dark:border-darkBorder
+            
 
             transition-colors duration-300
           "
@@ -160,7 +150,7 @@ const Sidebar = ({
     bg-clip-text
     text-transparent
 
-    drop-shadow-[0_0_8px_rgba(249,107,0,0.35)]
+    
         "
                 >
                   BHARAT
@@ -210,12 +200,9 @@ const Sidebar = ({
 
   text-white
 
-  shadow-xl
-  shadow-orange-500/30
+  
 
-  border-4
-  border-lightBg
-  dark:border-darkBg
+  
 
   hover:scale-105
 
@@ -284,8 +271,7 @@ const Sidebar = ({
               from-[#8B0000]/20
               to-[#F96B00]/20
 
-              border
-              border-orange-500/20
+              
 
               p-4
 
