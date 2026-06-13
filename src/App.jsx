@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./Components/Layout/DashboardLayout.jsx";
 import LoginPage from "./Pages/Login/LoginPage.jsx";
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
+import ProfilePage from "./Pages/AdminProfile/ProfilePage.jsx";
 
 const Dashboard = () => {
   return (
@@ -49,6 +50,10 @@ function App() {
             path="users"
             element={<Users />}
           />
+          <Route
+  path="profile"
+  element={<ProfilePage />}
+/>
         </Route>
       </Routes>
     </BrowserRouter>

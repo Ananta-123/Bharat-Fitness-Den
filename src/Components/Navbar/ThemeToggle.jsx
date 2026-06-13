@@ -18,9 +18,7 @@ const ThemeToggle = () => {
         className="
           h-11 w-11
           rounded-2xl
-          border
-          border-orange-300
-          dark:border-orange-500/20
+          
           bg-white
           dark:bg-[#111827]
         "
@@ -40,9 +38,7 @@ const ThemeToggle = () => {
       className="
         h-11 w-11
         rounded-2xl
-        border
-        border-orange-300
-        dark:border-orange-500/20
+        
         bg-white
         dark:bg-[#111827]
         flex items-center justify-center

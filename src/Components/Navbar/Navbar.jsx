@@ -1,24 +1,40 @@
+// Navbar.jsx
+
 import {
   Bell,
   User,
   Menu,
+  LogOut,
 } from "lucide-react";
 
 import { motion } from "framer-motion";
 
 import ThemeToggle from "./ThemeToggle";
 
+import { useNavigate } from "react-router-dom";
+
 const Navbar = ({ setMobileOpen }) => {
+  const navigate = useNavigate();
+
+  // LOGOUT FUNCTION
+  const handleLogout = () => {
+    localStorage.removeItem("adminAuth");
+
+    navigate("/login");
+  };
+
   return (
     <header
       className="
         sticky top-0 z-30
         h-20
 
-        
-
         bg-white/95
         dark:bg-[#060816]/95
+
+        border-b
+        border-gray-200
+        dark:border-white/5
 
         backdrop-blur-xl
 
@@ -40,10 +56,12 @@ const Navbar = ({ setMobileOpen }) => {
             className="
               md:hidden
 
-              h-4 w-4
+              h-11 w-11
               rounded-xl
 
-              
+              border
+              border-gray-200
+              dark:border-white/10
 
               bg-white
               dark:bg-[#111827]
@@ -51,8 +69,6 @@ const Navbar = ({ setMobileOpen }) => {
               text-[#F96B00]
 
               flex items-center justify-center
-
-              
 
               transition-all duration-300
             "
@@ -94,8 +110,6 @@ const Navbar = ({ setMobileOpen }) => {
 
         {/* RIGHT */}
         <div className="flex items-center gap-3">
-          
-
           {/* NOTIFICATION */}
           <motion.button
             whileHover={{
@@ -120,16 +134,12 @@ const Navbar = ({ setMobileOpen }) => {
 
               text-[#F96B00]
 
-              
-
               transition-all duration-300
             "
           >
             <Bell
               size={20}
-              className="
-                text-[#F96B00]
-              "
+              className="text-[#F96B00]"
             />
 
             <span
@@ -146,33 +156,74 @@ const Navbar = ({ setMobileOpen }) => {
           </motion.button>
 
           {/* THEME TOGGLE */}
-          <ThemeToggle />
+          <ThemeToggle size={18}  />
 
-        {/* PROFILE ICON */}
-<motion.button
-  whileHover={{
-    scale: 1.05,
-  }}
-  whileTap={{
-    scale: 0.95,
-  }}
-  className="
-    h-11 w-11
+          {/* PROFILE BUTTON */}
+          <motion.button
+            whileHover={{
+              scale: 1.05,
+            }}
+            whileTap={{
+              scale: 0.95,
+            }}
+            onClick={() =>
+              navigate("/profile")
+            }
+            className="
+              h-11
 
-    rounded-full
+              px-3
 
-    bg-white
-    dark:bg-[#111827]
+              rounded-2xl
 
-    flex items-center justify-center
+              
 
-    text-[#F96B00]
+              bg-white
+              dark:bg-[#111827]
 
-    transition-all duration-300
-  "
->
-  <User size={20} />
-</motion.button>
+              flex items-center gap-3
+
+              transition-all duration-300
+            "
+          >
+            {/* AVATAR */}
+            <User size={18} className="text-[#F96B00]" />
+
+            
+          </motion.button>
+
+          {/* LOGOUT BUTTON */}
+          <motion.button
+            whileHover={{
+              scale: 1.05,
+            }}
+            whileTap={{
+              scale: 0.95,
+            }}
+            onClick={handleLogout}
+            className="
+              h-11
+
+              px-4
+
+              rounded-2xl
+
+              
+
+              bg-red-50
+              dark:bg-red-500/10
+
+              flex items-center gap-2
+
+              text-red-500
+
+              transition-all duration-300
+            "
+          >
+            <LogOut size={18} />
+
+            
+          </motion.button>
         </div>
       </div>
     </header>
