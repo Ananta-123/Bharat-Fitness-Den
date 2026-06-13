@@ -11,7 +11,7 @@ const DashboardLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="bg-lightBg dark:bg-darkBg min-h-screen">
+    <div className="bg-white dark:bg-[#060816] min-h-screen">
       {/* Sidebar */}
       <Sidebar
         collapsed={collapsed}

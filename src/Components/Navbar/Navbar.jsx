@@ -1,6 +1,6 @@
 import {
   Bell,
-  
+  User,
   Menu,
 } from "lucide-react";
 
@@ -148,82 +148,31 @@ const Navbar = ({ setMobileOpen }) => {
           {/* THEME TOGGLE */}
           <ThemeToggle />
 
-          {/* PROFILE */}
-          <motion.div
-            whileHover={{
-              scale: 1.02,
-            }}
-            className="
-              hidden sm:flex
+        {/* PROFILE ICON */}
+<motion.button
+  whileHover={{
+    scale: 1.05,
+  }}
+  whileTap={{
+    scale: 0.95,
+  }}
+  className="
+    h-11 w-11
 
-              items-center gap-3
+    rounded-full
 
-              rounded-2xl
+    bg-white
+    dark:bg-[#111827]
 
-             
+    flex items-center justify-center
 
-              bg-white
-              dark:bg-[#111827]
+    text-[#F96B00]
 
-              px-3 py-2
-
-              cursor-pointer
-
-              
-
-              transition-all duration-300
-            "
-          >
-            {/* AVATAR */}
-            <div
-              className="
-                h-10 w-10
-
-                rounded-full
-
-                bg-gradient-to-r
-                from-[#8B0000]
-                to-[#F96B00]
-
-                flex items-center justify-center
-
-                text-white
-                font-bold
-              "
-            >
-              A
-            </div>
-
-            {/* USER INFO */}
-            <div className="leading-tight">
-              <h4
-                className="
-                  text-sm
-                  font-semibold
-
-                  text-gray-900
-                  dark:text-white
-
-                  transition-colors duration-300
-                "
-              >
-                Admin
-              </h4>
-
-              <p
-                className="
-                  text-xs
-
-                  text-gray-500
-                  dark:text-gray-400
-
-                  transition-colors duration-300
-                "
-              >
-                Super Admin
-              </p>
-            </div>
-          </motion.div>
+    transition-all duration-300
+  "
+>
+  <User size={20} />
+</motion.button>
         </div>
       </div>
     </header>

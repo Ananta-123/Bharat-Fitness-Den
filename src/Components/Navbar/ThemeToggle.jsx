@@ -32,7 +32,7 @@ const ThemeToggle = () => {
 
   return (
     <motion.button
-      whileHover={{ scale: 1.05 }}
+      
       whileTap={{ scale: 0.9 }}
       onClick={() =>
         setTheme(isDark ? "light" : "dark")
@@ -49,7 +49,7 @@ const ThemeToggle = () => {
         shadow-lg
         shadow-black/5
         dark:shadow-black/30
-        hover:border-orange-500/40
+       
         transition-all duration-300
       "
     >
