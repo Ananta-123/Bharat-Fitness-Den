@@ -19,7 +19,7 @@ const Sidebar = ({
   return (
     <>
       {/* MOBILE MENU BUTTON */}
-      <button
+      {/* <button
         onClick={() => setMobileOpen(true)}
         className="
           md:hidden
@@ -42,7 +42,7 @@ const Sidebar = ({
         "
       >
         <Menu size={22} />
-      </button>
+      </button> */}
 
       {/* OVERLAY */}
       <AnimatePresence>
