@@ -1,6 +1,6 @@
 import BranchCard from "./BranchCard";
 
-const BranchGrid = ({ branches }) => {
+const BranchGrid = ({ branches, onBranchUpdate, onBranchDelete }) => {
   return (
     <div
       className="
@@ -11,11 +11,13 @@ const BranchGrid = ({ branches }) => {
       "
     >
       {branches.map((branch) => (
-        <BranchCard
-          key={branch.id}
-          branch={branch}
-        />
-      ))}
+  <BranchCard
+    key={branch._id}
+    branch={branch}
+    onBranchUpdate={onBranchUpdate}
+    onBranchDelete={onBranchDelete}
+  />
+))}
     </div>
   );
 };

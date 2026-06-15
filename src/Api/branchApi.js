@@ -13,3 +13,26 @@ export const createBranch = async (data) => {
 
   return response.data;
 };
+
+export const updateBranch = async (
+  branchId,
+  updatedData
+) => {
+  const response =
+    await axiosInstance.put(
+      `/branches/${branchId}`,
+      updatedData
+    );
+
+  return response.data;
+};
+
+export const deleteBranch =
+  async (branchId) => {
+    const response =
+      await axiosInstance.delete(
+        `/branches/${branchId}`
+      );
+
+    return response.data;
+  };

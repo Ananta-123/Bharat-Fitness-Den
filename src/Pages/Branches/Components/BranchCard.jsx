@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 import {
@@ -8,12 +9,74 @@ import {
   DollarSign,
   Phone,
   Clock3,
+  Trash2
 } from "lucide-react";
 
 import StatusBadge from "./StatusBadge";
 import BranchMiniChart from "./BranchMiniChart";
 
-const BranchCard = ({ branch }) => {
+import UpdateBranchModal from "./UpdateBranchModal.jsx";
+import { updateBranch, deleteBranch } from "../../../Api/branchApi.js";
+
+const BranchCard = ({ branch, onBranchUpdate, onBranchDelete,}) => {
+
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleUpdateBranch =
+  async (updatedData) => {
+    try {
+      const response =
+        await updateBranch(
+          branch._id,
+          updatedData
+        );
+
+      console.log(response);
+
+      // UPDATE REACT STATE
+
+      onBranchUpdate(
+        response.branch
+      );
+
+      // CLOSE MODAL
+
+      setOpenModal(false);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteBranch =
+  async () => {
+    try {
+      const confirmDelete =
+        window.confirm(
+          "Are you sure you want to delete this branch?"
+        );
+
+      if (!confirmDelete)
+        return;
+
+      const response =
+        await deleteBranch(
+          branch._id
+        );
+
+      console.log(response);
+
+      // UPDATE UI
+
+      onBranchDelete(
+        branch._id
+      );
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <motion.div
       whileHover={{
@@ -72,7 +135,7 @@ const BranchCard = ({ branch }) => {
                 dark:text-white
               "
             >
-              {branch.name}
+              {branch.branchName}
             </h2>
 
             <div
@@ -84,13 +147,18 @@ const BranchCard = ({ branch }) => {
               "
             >
               <MapPin size={15} />
-              {branch.location}
+
+              {branch.address}
             </div>
           </div>
         </div>
 
         <StatusBadge
-          status={branch.status}
+          status={
+            branch.status
+              ? "active"
+              : "inactive"
+          }
         />
       </div>
 
@@ -103,6 +171,8 @@ const BranchCard = ({ branch }) => {
           mt-6
         "
       >
+        {/* MEMBERS */}
+
         <div
           className="
             rounded-2xl
@@ -123,13 +193,15 @@ const BranchCard = ({ branch }) => {
               dark:text-white
             "
           >
-            {branch.members}
+            {branch.totalUsers}
           </h3>
 
           <p className="text-gray-400 text-sm">
             Members
           </p>
         </div>
+
+        {/* TRAINERS */}
 
         <div
           className="
@@ -151,13 +223,15 @@ const BranchCard = ({ branch }) => {
               dark:text-white
             "
           >
-            {branch.trainers}
+            {branch.totalTrainers}
           </h3>
 
           <p className="text-gray-400 text-sm">
             Trainers
           </p>
         </div>
+
+        {/* REVENUE */}
 
         <div
           className="
@@ -179,7 +253,7 @@ const BranchCard = ({ branch }) => {
               dark:text-white
             "
           >
-            ${branch.revenue}
+            $0
           </h3>
 
           <p className="text-gray-400 text-sm">
@@ -213,7 +287,7 @@ const BranchCard = ({ branch }) => {
               text-orange-500
             "
           >
-            {branch.capacity}%
+            60%
           </p>
         </div>
 
@@ -228,7 +302,7 @@ const BranchCard = ({ branch }) => {
         >
           <div
             style={{
-              width: `${branch.capacity}%`,
+              width: `60%`,
             }}
             className="
               h-full
@@ -239,8 +313,12 @@ const BranchCard = ({ branch }) => {
         </div>
       </div>
 
+      {/* MINI CHART */}
+
       <BranchMiniChart
-        chartData={branch.chartData}
+        chartData={[
+          20, 45, 30, 60, 40,
+        ]}
       />
 
       {/* FOOTER */}
@@ -264,16 +342,24 @@ const BranchCard = ({ branch }) => {
             dark:text-gray-400
           "
         >
+          {/* PHONE */}
+
           <div className="flex items-center gap-2">
             <Phone size={15} />
+
             {branch.phone}
           </div>
 
+          {/* TIMING */}
+
           <div className="flex items-center gap-2">
             <Clock3 size={15} />
-            {branch.timing}
+
+            6AM - 10PM
           </div>
         </div>
+
+        {/* BUTTONS */}
 
         <div
           className="
@@ -282,23 +368,26 @@ const BranchCard = ({ branch }) => {
           "
         >
           <button
-            className="
-              flex-1
-              py-3
-              rounded-2xl
-              font-semibold
-              text-white
+  onClick={() =>
+    setOpenModal(true)
+  }
+  className="
+    flex-1
+    py-3
+    rounded-2xl
+    font-semibold
+    text-white
 
-              bg-gradient-to-r
-              from-orange-500
-              to-orange-400
+    bg-gradient-to-r
+    from-orange-500
+    to-orange-400
 
-              hover:scale-[1.01]
-              transition-all
-            "
-          >
-            Manage
-          </button>
+    hover:scale-[1.01]
+    transition-all
+  "
+>
+  Manage
+</button>
 
           <button
             className="
@@ -317,8 +406,46 @@ const BranchCard = ({ branch }) => {
           >
             Analytics
           </button>
+          <button
+    onClick={
+      handleDeleteBranch
+    }
+    className="
+      h-12
+      w-12
+
+      rounded-2xl
+
+      flex
+      items-center
+      justify-center
+
+      border
+      border-red-200
+      dark:border-red-500/20
+
+      bg-red-50
+      dark:bg-red-500/10
+
+      text-red-500
+
+      hover:scale-105
+
+      transition-all
+    "
+  >
+    <Trash2 size={18} />
+  </button>
         </div>
       </div>
+      <UpdateBranchModal
+  isOpen={openModal}
+  onClose={() =>
+    setOpenModal(false)
+  }
+  branch={branch}
+  onUpdate={handleUpdateBranch}
+/>
     </motion.div>
   );
 };
