@@ -4,6 +4,8 @@ import DashboardLayout from "./Components/Layout/DashboardLayout.jsx";
 import LoginPage from "./Pages/Login/LoginPage.jsx";
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
 import ProfilePage from "./Pages/AdminProfile/ProfilePage.jsx";
+import UsersPage from "./Pages/Users/UserPage.jsx";
+import BranchPage from "./Pages/Branches/BranchPage.jsx";
 
 const Dashboard = () => {
   return (
@@ -13,13 +15,7 @@ const Dashboard = () => {
   );
 };
 
-const Users = () => {
-  return (
-    <div className="text-lightText dark:text-darkText">
-      Users Page
-    </div>
-  );
-};
+
 
 function App() {
   return (
@@ -48,9 +44,17 @@ function App() {
 
           <Route
             path="users"
-            element={<Users />}
+            element={<UsersPage />}
           />
+
           <Route
+          path="branches"
+          element={<BranchPage />}
+        />
+
+          <Route
+          
+          
   path="profile"
   element={<ProfilePage />}
 />

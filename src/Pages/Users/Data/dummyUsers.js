@@ -1,0 +1,73 @@
+const dummyUsers = [
+  {
+    id: 1,
+    name: "Ahmed Al-Hassan",
+    gender: "Male",
+    age: 28,
+    email: "ahmed@email.com",
+    phone: "+966 50 123 4567",
+    plan: "Elite",
+    branch: "Downtown",
+    workouts: 145,
+    joined: "Jan 12, 2025",
+    status: "active",
+  },
+
+   {
+    id: 1,
+    name: "Ahmed Al-Hassan",
+    gender: "Male",
+    age: 28,
+    email: "ahmed@email.com",
+    phone: "+966 50 123 4567",
+    plan: "Elite",
+    branch: "Downtown",
+    workouts: 145,
+    joined: "Jan 12, 2025",
+    status: "active",
+  },
+
+   {
+    id: 1,
+    name: "Ahmed Al-Hassan",
+    gender: "Male",
+    age: 28,
+    email: "ahmed@email.com",
+    phone: "+966 50 123 4567",
+    plan: "Elite",
+    branch: "Downtown",
+    workouts: 145,
+    joined: "Jan 12, 2025",
+    status: "active",
+  },
+
+   {
+    id: 1,
+    name: "Ahmed Al-Hassan",
+    gender: "Male",
+    age: 28,
+    email: "ahmed@email.com",
+    phone: "+966 50 123 4567",
+    plan: "Elite",
+    branch: "Downtown",
+    workouts: 145,
+    joined: "Jan 12, 2025",
+    status: "active",
+  },
+
+  {
+    id: 2,
+    name: "Sara Ibrahim",
+    gender: "Female",
+    age: 25,
+    email: "sara@email.com",
+    phone: "+966 55 234 5678",
+    plan: "Premium",
+    branch: "Westside",
+    workouts: 98,
+    joined: "Feb 3, 2025",
+    status: "active",
+  },
+];
+
+export default dummyUsers;
