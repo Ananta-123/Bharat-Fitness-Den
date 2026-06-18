@@ -6,6 +6,7 @@ import ProtectedRoute from "./Components/ProtectedRoute.jsx";
 import ProfilePage from "./Pages/AdminProfile/ProfilePage.jsx";
 import UsersPage from "./Pages/Users/UserPage.jsx";
 import BranchPage from "./Pages/Branches/BranchPage.jsx";
+import TrainerPage from "./Pages/Trainer/TrainerPage.jsx";
 
 const Dashboard = () => {
   return (
@@ -50,6 +51,11 @@ function App() {
           <Route
           path="branches"
           element={<BranchPage />}
+        />
+
+        <Route 
+        path="trainers"
+        element={<TrainerPage />}
         />
 
           <Route
