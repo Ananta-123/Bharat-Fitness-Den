@@ -7,6 +7,7 @@ import ProfilePage from "./Pages/AdminProfile/ProfilePage.jsx";
 import UsersPage from "./Pages/Users/UserPage.jsx";
 import BranchPage from "./Pages/Branches/BranchPage.jsx";
 import TrainerPage from "./Pages/Trainer/TrainerPage.jsx";
+import SubscriptionPage from "./Pages/SubscriptionPlans/SubscriptionPage.jsx";
 
 const Dashboard = () => {
   return (
@@ -57,6 +58,11 @@ function App() {
         path="trainers"
         element={<TrainerPage />}
         />
+
+        <Route
+  path="subscriptions"
+  element={<SubscriptionPage />}
+/>
 
           <Route
           
