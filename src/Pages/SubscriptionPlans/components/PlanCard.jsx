@@ -16,8 +16,9 @@ const icons = {
 
 export default function PlanCard({
   plan,
+  onEdit,
 }) {
-  const Icon = icons[plan.name];
+  const Icon = icons[plan.name] || Shield;
 
   return (
     <motion.div
@@ -81,19 +82,25 @@ export default function PlanCard({
           </h3>
 
           <p className="text-sm text-gray-500">
-            {plan.subscribers} members
-          </p>
+  {plan.durationDays} Days
+</p>
         </div>
       </div>
 
       <h2 className="text-5xl font-bold text-gray-900 dark:text-white">
-        ${plan.price}
+        ₹{plan.amount}
         <span className="text-lg text-gray-500">
           /month
         </span>
       </h2>
 
-      <div className="mt-6 space-y-3">
+      <div className="mt-6">
+  <p className="text-gray-600 dark:text-gray-300">
+    {plan.description}
+  </p>
+</div>
+
+      {/* <div className="mt-6 space-y-3">
         {plan.features.map((feature, index) => (
           <div
             key={index}
@@ -109,22 +116,23 @@ export default function PlanCard({
             </span>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <button
-        className="
-          mt-8
-          w-full
-          py-3
-          rounded-xl
-          font-medium
-          text-white
-          bg-[#F96B00]
-          hover:bg-orange-600
-        "
-      >
-        Manage Plan
-      </button>
+  onClick={() => onEdit(plan)}
+  className="
+    mt-8
+    w-full
+    py-3
+    rounded-xl
+    font-medium
+    text-white
+    bg-[#F96B00]
+    hover:bg-orange-600
+  "
+>
+  Edit Plan
+</button>
     </motion.div>
   );
 }

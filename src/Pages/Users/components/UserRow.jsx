@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 
 import StatusBadge from "./StatusBadge";
 
-const UserRow = ({ user }) => {
+const UserRow = ({ user, onEdit, onDelete, }) => {
   return (
     <motion.tr
       whileHover={{
@@ -48,11 +48,11 @@ const UserRow = ({ user }) => {
               shadow-md
             "
           >
-            {user.name
+            {user.fullName
               .split(" ")
               .map((n) => n[0])
               .join("")
-              .slice(0, 2)}
+              .slice(0, 2) || "NA"}
           </div>
 
           {/* NAME */}
@@ -65,7 +65,7 @@ const UserRow = ({ user }) => {
                 transition-colors duration-300
               "
             >
-              {user.name}
+              {user.fullName}
             </h3>
 
             <p
@@ -80,7 +80,7 @@ const UserRow = ({ user }) => {
                 transition-colors duration-300
               "
             >
-              {user.gender}, {user.age} yrs
+              {user.role}
             </p>
           </div>
         </div>
@@ -108,7 +108,7 @@ const UserRow = ({ user }) => {
               transition-colors duration-300
             "
           >
-            {user.phone}
+            {user.mobile}
           </p>
         </div>
       </td>
@@ -133,7 +133,7 @@ const UserRow = ({ user }) => {
             transition-all duration-300
           "
         >
-          {user.plan}
+          {user.subscriptionPlanId?.name}
         </div>
       </td>
 
@@ -146,7 +146,7 @@ const UserRow = ({ user }) => {
           transition-colors duration-300
         "
       >
-        {user.branch}
+        {user.branchId?.branchName}
       </td>
 
       {/* WORKOUTS */}
@@ -168,12 +168,16 @@ const UserRow = ({ user }) => {
                 from-orange-500 to-amber-400
                 transition-all duration-500
               "
-              style={{
-                width: `${Math.min(
-                  user.workouts / 3,
-                  100
-                )}%`,
-              }}
+//               style={{
+//   width: `${Math.min(
+//     (user.workouts || 0) / 3,
+//     100
+//   )}%`,
+// }}
+style={{
+  width: "0%",
+}}
+              
             />
           </div>
 
@@ -185,7 +189,8 @@ const UserRow = ({ user }) => {
               transition-colors duration-300
             "
           >
-            {user.workouts}
+            {/* {user.workouts} */}
+            0
           </span>
         </div>
       </td>
@@ -199,14 +204,18 @@ const UserRow = ({ user }) => {
           transition-colors duration-300
         "
       >
-        {user.joined}
+        {new Date(user.createdAt).toLocaleDateString()}
       </td>
 
       {/* STATUS */}
       <td className="px-6 py-2">
         <StatusBadge
-          status={user.status}
-        />
+  status={
+    user.isActive
+      ? "active"
+      : "inactive"
+  }
+/>
       </td>
 
       {/* ACTIONS */}
@@ -235,45 +244,46 @@ const UserRow = ({ user }) => {
 
           {/* EDIT */}
           <button
-            className="
-              p-1.5 rounded-full
-              border
-              border-gray-300
-              dark:border-white/10
-
-              text-gray-600
-              dark:text-gray-300
-
-              hover:border-blue-500
-              hover:text-blue-500
-              hover:scale-110
-
-              transition-all duration-200
-            "
-          >
-            <Pencil size={16} />
-          </button>
+  onClick={() => onEdit(user)}
+  className="
+    p-1.5 rounded-full
+    border border-gray-300
+    dark:border-white/10
+    text-gray-600
+    dark:text-gray-300
+    hover:border-blue-500
+    hover:text-blue-500
+    hover:scale-110
+    transition-all duration-200
+  "
+>
+  <Pencil size={16} />
+</button>
 
           {/* DELETE */}
           <button
-            className="
-              p-1.5 rounded-full
-              border
-              border-gray-300
-              dark:border-white/10
+  onClick={() =>
+    onDelete(user._id)
+  }
+  className="
+    p-1.5 rounded-full
 
-              text-gray-600
-              dark:text-gray-300
+    border
+    border-gray-300
+    dark:border-white/10
 
-              hover:border-red-500
-              hover:text-red-500
-              hover:scale-110
+    text-gray-600
+    dark:text-gray-300
 
-              transition-all duration-200
-            "
-          >
-            <Trash2 size={16} />
-          </button>
+    hover:border-red-500
+    hover:text-red-500
+    hover:scale-110
+
+    transition-all duration-200
+  "
+>
+  <Trash2 size={16} />
+</button>
         </div>
       </td>
     </motion.tr>

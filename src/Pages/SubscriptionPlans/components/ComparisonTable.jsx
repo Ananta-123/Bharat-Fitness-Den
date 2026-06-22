@@ -117,7 +117,7 @@ export default function ComparisonTable({ plans }) {
                     </h3>
 
                     <p className="mt-1 text-[#F96B00] font-semibold">
-                      ${plan.price}/mo
+                      ₹{plan.amount}/{plan.durationDays}
                     </p>
 
                     {plan.popular && (

@@ -1,6 +1,6 @@
 import UserRow from "./UserRow";
 
-const UserTable = ({ users }) => {
+const UserTable = ({ users, onEdit, onDelete, }) => {
   return (
     <div
       className="
@@ -131,23 +131,38 @@ const UserTable = ({ users }) => {
 
         {/* TABLE BODY */}
         <tbody
-          className="
-            bg-white
-            dark:bg-[#070B1A]
+  className="
+    bg-white
+    dark:bg-[#070B1A]
 
-            text-gray-800
-            dark:text-white
-
-            transition-all duration-300
-          "
-        >
-          {users.map((user) => (
-            <UserRow
-              key={user.id}
-              user={user}
-            />
-          ))}
-        </tbody>
+    text-gray-800
+    dark:text-white
+  "
+>
+  {users.length > 0 ? (
+    users.map((user) => (
+      <UserRow
+        key={user.id}
+        user={user}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    ))
+  ) : (
+    <tr>
+      <td
+        colSpan="8"
+        className="
+          text-center
+          py-10
+          text-gray-500
+        "
+      >
+        No members found
+      </td>
+    </tr>
+  )}
+</tbody>
       </table>
     </div>
   );

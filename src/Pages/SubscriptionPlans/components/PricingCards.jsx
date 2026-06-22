@@ -2,6 +2,7 @@ import PlanCard from "./PlanCard";
 
 export default function PricingCards({
   plans,
+  onEdit,
 }) {
   return (
     <div
@@ -17,6 +18,7 @@ export default function PricingCards({
         <PlanCard
           key={plan._id}
           plan={plan}
+          onEdit={onEdit}
         />
       ))}
     </div>

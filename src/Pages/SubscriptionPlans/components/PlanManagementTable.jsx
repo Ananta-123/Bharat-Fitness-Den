@@ -53,13 +53,13 @@ export default function PlanManagementTable({
                 PRICE
               </th>
 
-              <th className="px-6 py-5 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
+              {/* <th className="px-6 py-5 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
                 SUBSCRIBERS
               </th>
 
               <th className="px-6 py-5 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
                 REVENUE
-              </th>
+              </th> */}
 
               <th className="px-6 py-5 text-left text-sm font-semibold text-gray-600 dark:text-gray-400">
                 STATUS
@@ -140,7 +140,7 @@ export default function PlanManagementTable({
                   {/* PRICE */}
                   <td className="px-6 py-5">
                     <div className="font-bold text-lg text-gray-900 dark:text-white">
-                      ${plan.price}
+                      ${plan.amount}
                       <span className="text-sm text-gray-500 font-normal">
                         /mo
                       </span>
@@ -148,19 +148,19 @@ export default function PlanManagementTable({
                   </td>
 
                   {/* SUBSCRIBERS */}
-                  <td className="px-6 py-5">
+                  {/* <td className="px-6 py-5">
                     <span className="font-semibold text-gray-900 dark:text-white">
                       {plan.subscribers}
                     </span>
-                  </td>
+                  </td> */}
 
                   {/* REVENUE */}
-                  <td className="px-6 py-5">
+                  {/* <td className="px-6 py-5">
                     <span className="font-bold text-green-600 dark:text-green-400">
                       $
                       {plan.revenue.toLocaleString()}
                     </span>
-                  </td>
+                  </td> */}
 
                   {/* STATUS */}
                   <td className="px-6 py-5">

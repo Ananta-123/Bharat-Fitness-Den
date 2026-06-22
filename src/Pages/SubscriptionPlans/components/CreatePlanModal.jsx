@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
+import { createPlan } from "../../../Api/subscriptionApi.js"
+
 export default function CreatePlanModal({
   isOpen,
   onClose,
@@ -9,11 +11,13 @@ export default function CreatePlanModal({
 }) {
   const [formData, setFormData] = useState({
     name: "",
-    price: "",
-    duration: "1 Month",
+    amount: "",
+    durationDays: "30",
     status: "active",
     description: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -22,10 +26,31 @@ export default function CreatePlanModal({
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    setLoading(true);
+
+    const response = await createPlan(formData);
+
+    console.log(response);
+
+    alert("Plan Created Successfully");
+    await onSubmit?.();
+
+    onClose();
+  } catch (error) {
+    console.error(error);
+
+    alert(
+      error?.response?.data?.message ||
+      "Failed to create plan"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (!isOpen) return null;
 
@@ -73,23 +98,23 @@ export default function CreatePlanModal({
 
             <input
               type="number"
-              name="price"
+              name="amount"
               placeholder="Price"
-              value={formData.price}
+              value={formData.amount}
               onChange={handleChange}
               className="w-full p-3 rounded-xl border dark:bg-[#060816]"
             />
 
             <select
-              name="duration"
-              value={formData.duration}
+              name="durationDays"
+              value={formData.durationDays}
               onChange={handleChange}
               className="w-full p-3 rounded-xl border dark:bg-[#060816]"
             >
-              <option>1 Month</option>
-              <option>3 Months</option>
-              <option>6 Months</option>
-              <option>12 Months</option>
+              <option value="30">1 Month</option>
+<option value="90">3 Months</option>
+<option value="180">6 Months</option>
+<option value="365">12 Months</option>
             </select>
 
             <select
@@ -129,16 +154,18 @@ export default function CreatePlanModal({
               </button>
 
               <button
-                type="submit"
-                className="
-                  px-5 py-2
-                  rounded-xl
-                  bg-[#F96B00]
-                  text-white
-                "
-              >
-                Create Plan
-              </button>
+  type="submit"
+  disabled={loading}
+  className="
+    px-5 py-2
+    rounded-xl
+    bg-[#F96B00]
+    text-white
+    disabled:opacity-50
+  "
+>
+  {loading ? "Creating..." : "Create Plan"}
+</button>
             </div>
           </form>
         </motion.div>

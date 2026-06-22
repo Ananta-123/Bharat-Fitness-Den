@@ -68,6 +68,19 @@ const dummyUsers = [
     joined: "Feb 3, 2025",
     status: "active",
   },
+  {
+    id: 6,
+    name: "liku",
+    gender: "male",
+    age: 25,
+    email: "liku@email.com",
+    phone: "+966 55 234 5678",
+    plan: "Premium",
+    branch: "Westside",
+    workouts: 98,
+    joined: "Feb 3, 2025",
+    status: "active",
+  },
 ];
 
 export default dummyUsers;

@@ -4,7 +4,14 @@ import {
   Filter,
 } from "lucide-react";
 
-const SearchBar = () => {
+const SearchBar = ({
+  searchTerm,
+  setSearchTerm,
+  selectedPlan,
+  setSelectedPlan,
+  selectedStatus,
+  setSelectedStatus,
+}) => {
   return (
     <div
       className="
@@ -59,22 +66,26 @@ const SearchBar = () => {
           />
 
           <input
-            type="text"
-            placeholder="Search members..."
-            className="
-              bg-transparent
-              outline-none
-              w-full
+  type="text"
+  placeholder="Search members..."
+  value={searchTerm}
+  onChange={(e) =>
+    setSearchTerm(e.target.value)
+  }
+  className="
+    bg-transparent
+    outline-none
+    w-full
 
-              text-sm
+    text-sm
 
-              text-gray-800
-              dark:text-white
+    text-gray-800
+    dark:text-white
 
-              placeholder:text-gray-500
-              dark:placeholder:text-gray-400
-            "
-          />
+    placeholder:text-gray-500
+    dark:placeholder:text-gray-400
+  "
+/>
         </div>
 
         {/* FILTER ICON */}
@@ -107,37 +118,31 @@ const SearchBar = () => {
         {/* PLAN DROPDOWN */}
         <div className="relative">
           <select
-            className="
-              appearance-none
-
-              h-12
-              min-w-[150px]
-
-              px-5 pr-10
-
-              rounded-2xl
-
-              border border-gray-200
-              dark:border-white/10
-
-              bg-gray-100
-              dark:bg-[#02045D]/40
-
-              text-sm font-medium
-
-              text-gray-800
-              dark:text-white
-
-              outline-none
-
-              hover:border-orange-500
-              focus:border-orange-500
-
-              transition-all duration-300
-
-              cursor-pointer
-            "
-          >
+  value={selectedPlan}
+  onChange={(e) =>
+    setSelectedPlan(e.target.value)
+  }
+  className="
+    appearance-none
+    h-12
+    min-w-[150px]
+    px-5 pr-10
+    rounded-2xl
+    border border-gray-200
+    dark:border-white/10
+    bg-gray-100
+    dark:bg-[#02045D]/40
+    text-sm font-medium
+    text-gray-800
+    dark:text-white
+    outline-none
+    hover:border-orange-500
+    focus:border-orange-500
+    transition-all duration-300
+    cursor-pointer
+  "
+>
+          
             <option>All Plans</option>
             <option>Elite</option>
             <option>Premium</option>
@@ -161,37 +166,30 @@ const SearchBar = () => {
         {/* STATUS DROPDOWN */}
         <div className="relative">
           <select
-            className="
-              appearance-none
-
-              h-12
-              min-w-[150px]
-
-              px-5 pr-10
-
-              rounded-2xl
-
-              border border-gray-200
-              dark:border-white/10
-
-              bg-gray-100
-              dark:bg-[#02045D]/40
-
-              text-sm font-medium
-
-              text-gray-800
-              dark:text-white
-
-              outline-none
-
-              hover:border-orange-500
-              focus:border-orange-500
-
-              transition-all duration-300
-
-              cursor-pointer
-            "
-          >
+  value={selectedStatus}
+  onChange={(e) =>
+    setSelectedStatus(e.target.value)
+  }
+  className="
+    appearance-none
+    h-12
+    min-w-[150px]
+    px-5 pr-10
+    rounded-2xl
+    border border-gray-200
+    dark:border-white/10
+    bg-gray-100
+    dark:bg-[#02045D]/40
+    text-sm font-medium
+    text-gray-800
+    dark:text-white
+    outline-none
+    hover:border-orange-500
+    focus:border-orange-500
+    transition-all duration-300
+    cursor-pointer
+  "
+>
             <option>All Status</option>
             <option>Active</option>
             <option>Pending</option>
