@@ -46,23 +46,27 @@ fetchDropdownData();
 }, [isOpen]);
 
 useEffect(() => {
-if (user) {
-setFormData({
-fullName:
-user.fullName || "",
-email:
-user.email || "",
-mobile:
-user.mobile || "",
-branchId:
-user.branchId?._id || "",
-subscriptionPlanId:
-user.subscriptionPlanId?._id ||
-"",
-isActive:
-user.isActive ?? true,
-});
-}
+  if (user) {
+    console.log("EDIT USER:", user);
+
+    setFormData({
+      fullName: user.fullName || "",
+      email: user.email || "",
+      mobile: user.mobile || "",
+
+      branchId:
+        typeof user.branchId === "object"
+          ? user.branchId?._id
+          : user.branchId || "",
+
+      subscriptionPlanId:
+        typeof user.subscriptionPlanId === "object"
+          ? user.subscriptionPlanId?._id
+          : user.subscriptionPlanId || "",
+
+      isActive: user.isActive ?? true,
+    });
+  }
 }, [user]);
 
 const fetchDropdownData =
@@ -124,10 +128,24 @@ const handleSubmit = async (e) => {
   try {
     setLoading(true);
 
-    const response = await updateUser(
-      user._id,
-      formData
-    );
+    const payload = {
+  ...formData,
+};
+
+if (!payload.branchId) {
+  delete payload.branchId;
+}
+
+if (!payload.subscriptionPlanId) {
+  delete payload.subscriptionPlanId;
+}
+
+console.log("PAYLOAD:", payload);
+
+const response = await updateUser(
+  user._id,
+  payload
+);
 
     console.log(
       "UPDATE RESPONSE:",
