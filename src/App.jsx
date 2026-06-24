@@ -8,6 +8,9 @@ import UsersPage from "./Pages/Users/UserPage.jsx";
 import BranchPage from "./Pages/Branches/BranchPage.jsx";
 import TrainerPage from "./Pages/Trainer/TrainerPage.jsx";
 import SubscriptionPage from "./Pages/SubscriptionPlans/SubscriptionPage.jsx";
+import SupplementManagement from "./Pages/Supplements Management/SuplementManagement.jsx";
+import CategoryPage from "./Pages/Supplements Management/Category/Category.jsx";
+import SupplementStorePage from "./Pages/Supplements Management/Supplements/SupplementStorePage.jsx";
 
 const Dashboard = () => {
   return (
@@ -21,7 +24,7 @@ const Dashboard = () => {
 
 function App() {
   return (
-     <BrowserRouter>
+    <BrowserRouter>
       <Routes>
         {/* LOGIN PAGE */}
         <Route
@@ -50,26 +53,30 @@ function App() {
           />
 
           <Route
-          path="branches"
-          element={<BranchPage />}
-        />
-
-        <Route 
-        path="trainers"
-        element={<TrainerPage />}
-        />
-
-        <Route
-  path="subscriptions"
-  element={<SubscriptionPage />}
-/>
+            path="branches"
+            element={<BranchPage />}
+          />
 
           <Route
-          
-          
-  path="profile"
-  element={<ProfilePage />}
-/>
+            path="trainers"
+            element={<TrainerPage />}
+          />
+
+          <Route
+            path="subscriptions"
+            element={<SubscriptionPage />}
+          />
+          <Route path="supplements" element={<SupplementManagement />}>
+            <Route index element={<CategoryPage />} />
+            <Route path="store" element={<SupplementStorePage />} />
+          </Route>
+
+          <Route
+
+
+            path="profile"
+            element={<ProfilePage />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>
