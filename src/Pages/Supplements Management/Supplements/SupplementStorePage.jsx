@@ -1,6 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
+
+
+import {
+  getAllProducts,
+  updateProduct,
+  createProduct,
+  deleteProduct
+} from "../../../Api/supplementApi";
+
+import { getAllCategories } from "../../../Api/categoryApi";
+
 
 import {
   Search,
@@ -11,94 +22,117 @@ import {
   Plus,
   Star,
 } from "lucide-react";
+import AddProductModal from "./components/AddProductModal.jsx";
+import EditProductModal from "./components/EditProductModal";
 
 const SupplementStorePage = () => {
   const { theme } = useTheme();
-
-  // Future API Data
-  const [products] = useState([
-    {
-      id: 1,
-      name: "Whey Protein Gold",
-      brand: "Optimum Nutrition",
-      category: "Protein",
-      price: 89.99,
-      stock: 145,
-      sold: 342,
-      rating: 4.9,
-      sku: "WPG-001",
-      status: "in-stock",
-    },
-    {
-      id: 2,
-      name: "Pre Workout Ignite",
-      brand: "FITNESS DEN Brand",
-      category: "Pre Workout",
-      price: 54.99,
-      stock: 23,
-      sold: 218,
-      rating: 4.7,
-      sku: "PWI-002",
-      status: "low-stock",
-    },
-    {
-      id: 3,
-      name: "Creatine Monohydrate",
-      brand: "Optimum Nutrition",
-      category: "Creatine",
-      price: 34.99,
-      stock: 0,
-      sold: 298,
-      rating: 4.8,
-      sku: "CMH-004",
-      status: "out-stock",
-    },
-    {
-      id: 4,
-      name: "Mass Gainer 12lbs",
-      brand: "BSN",
-      category: "Mass Gainer",
-      price: 124.99,
-      stock: 67,
-      sold: 134,
-      rating: 4.5,
-      sku: "MGN-005",
-      status: "in-stock",
-    },
-    {
-      id: 5,
-      name: "Omega 3 Fish Oil",
-      brand: "Now Sports",
-      category: "Vitamins",
-      price: 24.99,
-      stock: 201,
-      sold: 156,
-      rating: 4.4,
-      sku: "OFO-006",
-      status: "in-stock",
-    },
-    {
-      id: 6,
-      name: "BCAA Recovery+",
-      brand: "Scivation",
-      category: "Amino Acids",
-      price: 44.99,
-      stock: 89,
-      sold: 175,
-      rating: 4.6,
-      sku: "BCR-003",
-      status: "in-stock",
-    },
-  ]);
-
   const [search, setSearch] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await getAllCategories();
+      setCategories(res.categories || []);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+
+  const handleCreateProduct = async (data) => {
+    try {
+      const res = await createProduct(data);
+
+      console.log("Create API Response:", res);
+
+      await fetchProducts();
+
+      setShowAddModal(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUpdateProduct = async (data) => {
+    try {
+      const res = await updateProduct(
+        selectedProduct._id,
+        data
+      );
+
+      console.log("Update API Response:", res);
+
+      await fetchProducts();
+
+      setShowEditModal(false);
+      setSelectedProduct(null);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+
+      const res = await getAllProducts();
+
+      console.log("Products API:", res);
+
+      setProducts(res.products || []);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []);
+
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[70vh]">
+        Loading...
+      </div>
+    );
+  }
+
+
+
+  const handleDeleteProduct = async (id) => {
+    try {
+
+      await deleteProduct(id);
+
+      await fetchProducts();
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
 
   const filteredProducts = products.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
 
   const totalRevenue = products.reduce(
-    (acc, item) => acc + item.price * item.sold,
+    (acc, item) => acc + item.price,
     0
   );
 
@@ -106,10 +140,7 @@ const SupplementStorePage = () => {
     (item) => item.stock < 25
   ).length;
 
-  const totalSold = products.reduce(
-    (acc, item) => acc + item.sold,
-    0
-  );
+  const totalSold = 0;
 
   return (
     <div className="min-h-screen p-6">
@@ -127,28 +158,12 @@ const SupplementStorePage = () => {
         </div>
 
         <div className="flex items-center gap-3">
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="
-      flex items-center gap-2
-      px-5 py-3
-      rounded-xl
-      text-white
-      bg-gradient-to-r
-      from-[#F96B00]
-      to-orange-500
-      shadow-lg
-    "
-  >
-    <Plus size={18} />
-    Add Category
-  </motion.button>
 
-  <motion.button
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-    className="
+          <motion.button
+            onClick={() => setShowAddModal(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="
       flex items-center gap-2
       px-5 py-3
       rounded-xl
@@ -158,11 +173,11 @@ const SupplementStorePage = () => {
       to-orange-500
       shadow-lg
     "
-  >
-    <Plus size={18} />
-    Add Product
-  </motion.button>
-</div>
+          >
+            <Plus size={18} />
+            Add Product
+          </motion.button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -236,8 +251,9 @@ const SupplementStorePage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredProducts.map((product) => (
+
           <motion.div
-            key={product.id}
+            key={product._id}
             whileHover={{
               y: -5,
               scale: 1.02,
@@ -267,7 +283,15 @@ const SupplementStorePage = () => {
                 </p>
               </div>
 
-              <StatusBadge status={product.status} />
+              <StatusBadge
+                status={
+                  product.stock === 0
+                    ? "out-stock"
+                    : product.stock < 25
+                      ? "low-stock"
+                      : "in-stock"
+                }
+              />
             </div>
 
             <div className="flex justify-between items-center mb-5">
@@ -281,19 +305,19 @@ const SupplementStorePage = () => {
                 dark:bg-[#060816]
                 "
               >
-                {product.category}
+                {product.categoryId?.name}
               </span>
 
               <div className="flex items-center gap-1 text-yellow-500">
                 <Star size={15} fill="currentColor" />
-                {product.rating}
+                N/A
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-5">
               <InfoBox
                 title="Price"
-                value={`$${product.price}`}
+                value={`₹${product.price}`}
               />
               <InfoBox
                 title="Stock"
@@ -301,7 +325,7 @@ const SupplementStorePage = () => {
               />
               <InfoBox
                 title="Sold"
-                value={product.sold}
+                value={0}
               />
             </div>
 
@@ -315,20 +339,19 @@ const SupplementStorePage = () => {
                   {product.stock === 0
                     ? "EMPTY"
                     : product.stock < 25
-                    ? "LOW"
-                    : "OK"}
+                      ? "LOW"
+                      : "OK"}
                 </span>
               </div>
 
               <div className="h-2 rounded-full overflow-hidden bg-gray-200 dark:bg-[#1B2440]">
                 <div
-                  className={`h-full ${
-                    product.stock === 0
-                      ? "bg-red-500"
-                      : product.stock < 25
+                  className={`h-full ${product.stock === 0
+                    ? "bg-red-500"
+                    : product.stock < 25
                       ? "bg-yellow-500"
                       : "bg-green-500"
-                  }`}
+                    }`}
                   style={{
                     width: `${Math.min(
                       product.stock,
@@ -340,23 +363,40 @@ const SupplementStorePage = () => {
             </div>
 
             <p className="text-sm text-gray-500 mb-5">
-              SKU: {product.sku}
+              ID: {product._id.slice(-6)}
             </p>
 
             <div className="flex gap-3">
               <button
+                onClick={() => {
+                  setSelectedProduct(product);
+                  setShowEditModal(true);
+                }}
                 className="
-                flex-1
-                py-3
-                rounded-xl
-                text-white
-                font-semibold
-                bg-gradient-to-r
-                from-[#F96B00]
-                to-orange-500
-                "
+    flex-1
+    py-3
+    rounded-xl
+    text-white
+    bg-gradient-to-r
+    from-[#F96B00]
+    to-orange-500
+  "
               >
                 Edit
+              </button>
+              <button
+                onClick={() => handleDeleteProduct(product._id)}
+                className="
+    flex-1
+    py-3
+    rounded-xl
+    text-white
+    bg-gradient-to-r
+    from-[#F96B00]
+    to-orange-500
+  "
+              >
+                Delete
               </button>
 
               {product.stock === 0 && (
@@ -377,6 +417,22 @@ const SupplementStorePage = () => {
           </motion.div>
         ))}
       </div>
+      <AddProductModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        categories={categories}
+        onSubmit={handleCreateProduct}
+      />
+      <EditProductModal
+        open={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setSelectedProduct(null);
+        }}
+        product={selectedProduct}
+        categories={categories}
+        onSubmit={handleUpdateProduct}
+      />
     </div>
   );
 };

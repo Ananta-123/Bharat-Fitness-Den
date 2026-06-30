@@ -47,3 +47,7 @@ body {
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(249, 107, 0, 0.7);
 }
+
+.input{
+    @apply w-full rounded-xl border border-gray-300 dark:border-[#1B2440] bg-white dark:bg-[#060816] px-4 py-3 outline-none;
+}
