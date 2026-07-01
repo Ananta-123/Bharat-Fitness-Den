@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { X, Star } from "lucide-react";
+import AssignClientModal from "./components/AssignClientModal.jsx";
 
 import {
   updateTrainer,
 } from "../../Api/trainerApi";
+
+import { getAllUsers } from "../../Api/userApi";
 
 export default function ViewProfileModal({
   isOpen,
@@ -12,9 +15,18 @@ export default function ViewProfileModal({
   fetchTrainers,
 }) {
 
-  const [isEditing, setIsEditing] =
-    useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [users, setUsers] = useState([]);
+  const fetchUsers = async () => {
+  try {
+    const res = await getAllUsers();
+    setUsers(res.users || []);
+  } catch (err) {
+    console.log(err);
+  }
+};
   const [formData, setFormData] =
     useState({
       name: "",
@@ -331,20 +343,31 @@ export default function ViewProfileModal({
 </button>
 
           <button
-            className="
-              px-6
-              rounded-2xl
-              border
-              border-orange-500/20
-              text-gray-900
-              dark:text-white
-              font-semibold
-            "
-          >
-            Assign Client
-          </button>
+    onClick={() => {
+        fetchUsers();
+        setShowAssignModal(true);
+    }}
+    className="
+      px-6
+      rounded-2xl
+      border
+      border-orange-500/20
+      text-gray-900
+      dark:text-white
+      font-semibold
+    "
+>
+    Assign Client
+</button>
         </div>
       </div>
+      <AssignClientModal
+    open={showAssignModal}
+    onClose={() => setShowAssignModal(false)}
+    trainer={trainer}
+    users={users}
+    fetchTrainers={fetchTrainers}
+/>
     </div>
   );
 }

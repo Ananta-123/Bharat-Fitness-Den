@@ -11,6 +11,7 @@ import SubscriptionPage from "./Pages/SubscriptionPlans/SubscriptionPage.jsx";
 import SupplementManagement from "./Pages/Supplements Management/SuplementManagement.jsx";
 import CategoryPage from "./Pages/Supplements Management/Category/Category.jsx";
 import SupplementStorePage from "./Pages/Supplements Management/Supplements/SupplementStorePage.jsx";
+import GoalGroupPage from "./Pages/Goal Groups/GoalGroupPage.jsx";
 
 const Dashboard = () => {
   return (
@@ -77,6 +78,7 @@ function App() {
             path="profile"
             element={<ProfilePage />}
           />
+          <Route path="goalgroups" element={<GoalGroupPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

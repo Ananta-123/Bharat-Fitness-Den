@@ -2,6 +2,7 @@ import {
   LayoutDashboard,
   Users,
   Dumbbell,
+  Target,
   Building2,
   CreditCard,
   Activity,
@@ -39,6 +40,11 @@ export const sidebarData = [
     title: "Subscriptions",
     path: "/subscriptions",
     icon: CreditCard,
+  },
+  {
+    title: "Goal Groups",
+    path: "/goalgroups",
+    icon: Target,
   },
   {
     title: "Workouts",
