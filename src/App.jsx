@@ -14,6 +14,7 @@ import SupplementStorePage from "./Pages/Supplements Management/Supplements/Supp
 import GoalGroupPage from "./Pages/Goal Groups/GoalGroupPage.jsx";
 import WorkoutPage from "./Pages/Workout/WorkoutPage.jsx";
 import DietPage from "./Pages/Diet Plan/DietPage.jsx";
+import BannerPage from "./Pages/Banners/BannerPage.jsx";
 
 const Dashboard = () => {
   return (
@@ -83,6 +84,7 @@ function App() {
           <Route path="goalgroups" element={<GoalGroupPage />} />
           <Route path="workouts" element={<WorkoutPage />} />
           <Route path="diet-plans" element={<DietPage />} />
+          <Route path="banners" element={<BannerPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
