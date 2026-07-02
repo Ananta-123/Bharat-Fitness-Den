@@ -1,4 +1,6 @@
 import {
+  Image,
+  ChartNoAxesCombined ,
   LayoutDashboard,
   Users,
   Dumbbell,
@@ -77,6 +79,11 @@ export const sidebarData = [
     icon: Bell,
   },
   {
+    title: "Banners",
+    path: "/banners",
+    icon: Image,
+  },
+  {
     title: "Reports",
     path: "/reports",
     icon: BarChart3,
@@ -85,5 +92,10 @@ export const sidebarData = [
     title: "Settings",
     path: "/settings",
     icon: Settings,
+  },
+   {
+    title: "Analytics",
+    path: "/analytics",
+    icon: ChartNoAxesCombined ,
   },
 ];

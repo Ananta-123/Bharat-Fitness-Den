@@ -13,6 +13,7 @@ import CategoryPage from "./Pages/Supplements Management/Category/Category.jsx";
 import SupplementStorePage from "./Pages/Supplements Management/Supplements/SupplementStorePage.jsx";
 import GoalGroupPage from "./Pages/Goal Groups/GoalGroupPage.jsx";
 import WorkoutPage from "./Pages/Workout/WorkoutPage.jsx";
+import DietPage from "./Pages/Diet Plan/DietPage.jsx";
 
 const Dashboard = () => {
   return (
@@ -81,6 +82,7 @@ function App() {
           />
           <Route path="goalgroups" element={<GoalGroupPage />} />
           <Route path="workouts" element={<WorkoutPage />} />
+          <Route path="diet-plans" element={<DietPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
