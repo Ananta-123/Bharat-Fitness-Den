@@ -1,6 +1,9 @@
 import {
   Image,
   ChartNoAxesCombined ,
+  CalendarClock,
+  ClipboardList,
+  Package ,
   LayoutDashboard,
   Users,
   Dumbbell,
@@ -48,10 +51,20 @@ export const sidebarData = [
     path: "/goalgroups",
     icon: Target,
   },
+   {
+    title: "Workouts Sessions",
+    path: "/workouts-sessions",
+    icon: CalendarClock,
+  },
   {
     title: "Workouts",
     path: "/workouts",
     icon: Activity,
+  },
+  {
+    title: "User Workouts",
+    path: "/user-workouts",
+    icon: ClipboardList,
   },
   {
     title: "Diet Plans",
@@ -66,7 +79,7 @@ export const sidebarData = [
   {
     title: "Orders",
     path: "/orders",
-    icon: ShoppingCart,
+    icon: Package ,
   },
   {
     title: "Offers",
@@ -89,9 +102,9 @@ export const sidebarData = [
     icon: BarChart3,
   },
   {
-    title: "Settings",
-    path: "/settings",
-    icon: Settings,
+    title: "Carts",
+    path: "/carts",
+    icon: ShoppingCart,
   },
    {
     title: "Analytics",
