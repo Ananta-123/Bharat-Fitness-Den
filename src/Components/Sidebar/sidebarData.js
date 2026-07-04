@@ -62,6 +62,11 @@ export const sidebarData = [
     icon: Activity,
   },
   {
+    title: "Exercise",
+    path: "/exercise",
+    icon: Dumbbell,
+  },
+  {
     title: "User Workouts",
     path: "/user-workouts",
     icon: ClipboardList,

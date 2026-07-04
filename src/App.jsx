@@ -18,6 +18,7 @@ import BannerPage from "./Pages/Banners/BannerPage.jsx";
 import ReportsPage from "./Pages/Reports/ReportsPage.jsx"
 import OffersPage from "./Pages/Offers/OffersPage.jsx";
 import CartPage from "./Pages/Cart/CartPage.jsx";
+import ExercisePage from "./Pages/Exercise/ExercisePage.jsx"
 
 const Dashboard = () => {
   return (
@@ -91,6 +92,7 @@ function App() {
           <Route path="reports" element={<ReportsPage />} />
           <Route path="offers" element={<OffersPage />} />
           <Route path="carts" element={<CartPage />} />
+          <Route path="exercise" element={<ExercisePage />} />
 
         </Route>
       </Routes>
