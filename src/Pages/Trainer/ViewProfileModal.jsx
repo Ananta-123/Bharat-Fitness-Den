@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { X, Star } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X, Star, Pencil } from "lucide-react";
 import AssignClientModal from "./components/AssignClientModal.jsx";
 
 import {
@@ -16,7 +16,7 @@ export default function ViewProfileModal({
 }) {
 
   const [isEditing, setIsEditing] = useState(false);
-
+  
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [users, setUsers] = useState([]);
   const fetchUsers = async () => {
@@ -35,39 +35,125 @@ export default function ViewProfileModal({
       specialization: "",
       experience: "",
     });
+    const fileInputRef = useRef(null);
+
+const [selectedImage, setSelectedImage] =
+  useState(null);
+
+const [imagePreview, setImagePreview] =
+  useState("");
 
   useEffect(() => {
-    if (trainer) {
-      setFormData({
-        name: trainer.name || "",
-        email: trainer.email || "",
-        phone: trainer.phone || "",
-        specialization:
-          trainer.specialization || "",
-        experience:
-          trainer.experience || "",
-      });
+  if (trainer) {
+    setFormData({
+      name: trainer.name || "",
+      email: trainer.email || "",
+      phone: trainer.phone || "",
+      specialization:
+        trainer.specialization || "",
+      experience:
+        trainer.experience || "",
+    });
+
+    setSelectedImage(null);
+
+    if (trainer.profileImage) {
+      setImagePreview(
+        trainer.profileImage.startsWith("http")
+          ? trainer.profileImage
+          : `http://localhost:5000${trainer.profileImage}`
+      );
+    } else {
+      setImagePreview("");
     }
-  }, [trainer]);
+  }
+}, [trainer]);
+const handleImageChange = (e) => {
+  const file = e.target.files?.[0];
+
+  if (!file) return;
+
+  // Check image type
+  if (!file.type.startsWith("image/")) {
+    alert("Please select a valid image.");
+    return;
+  }
+
+  // 5 MB limit
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Image size should be less than 5MB.");
+    return;
+  }
+
+  setSelectedImage(file);
+
+  const previewUrl =
+    URL.createObjectURL(file);
+
+  setImagePreview(previewUrl);
+
+  console.log(
+    "Selected profile image:",
+    file
+  );
+};
 
   
   if (!isOpen || !trainer) return null;
 
   const handleUpdate = async () => {
-    try {
-      const response =
-        await updateTrainer(
-          trainer._id,
-          formData
-        );
+  try {
+    const data = new FormData();
 
-      console.log(response);
-      await fetchTrainers();
-      onClose();
-    } catch (error) {
-      console.error(error);
+    data.append("name", formData.name);
+    data.append("email", formData.email);
+    data.append("phone", formData.phone);
+    data.append(
+      "specialization",
+      formData.specialization
+    );
+    data.append(
+      "experience",
+      formData.experience
+    );
+
+    // Add image only if user selected a new image
+    if (selectedImage) {
+      data.append(
+        "profileImage",
+        selectedImage
+      );
     }
-  };
+
+    console.log(
+      "Updating trainer with image:",
+      selectedImage
+    );
+
+    const response =
+      await updateTrainer(
+        trainer._id,
+        data
+      );
+
+    console.log(
+      "Updated trainer:",
+      response
+    );
+
+    await fetchTrainers();
+
+    setSelectedImage(null);
+
+    onClose();
+  } catch (error) {
+    console.error(
+      "Failed to update trainer:",
+      error
+    );
+  }
+};
+  
   
 
   return (
@@ -118,27 +204,83 @@ export default function ViewProfileModal({
 
         {/* Header */}
         <div className="flex gap-4 items-start">
-          <div
-            className="
-              h-16
-              w-16
-              rounded-2xl
-              flex
-              items-center
-              justify-center
-              font-bold
-              text-2xl
-              bg-orange-500/10
-              border
-              border-orange-500/30
-              text-[#F96B00]
-            "
-          >
-            {trainer.name
-  ?.split(" ")
-  .map((word) => word[0])
-  .join("")}
-          </div>
+          <div className="relative group">
+  {/* Profile Image */}
+  <div
+    className="
+      h-16
+      w-16
+      shrink-0
+      rounded-2xl
+      overflow-hidden
+      flex
+      items-center
+      justify-center
+      font-bold
+      text-2xl
+      bg-orange-500/10
+      border
+      border-orange-500/30
+      text-[#F96B00]
+    "
+  >
+    {imagePreview ? (
+      <img
+        src={imagePreview}
+        alt={trainer.name || "Trainer"}
+        className="h-full w-full object-cover"
+      />
+    ) : (
+      trainer.name
+        ?.split(" ")
+        .map((word) => word[0])
+        .join("")
+        .toUpperCase()
+    )}
+  </div>
+
+  {/* Pencil Button */}
+  <button
+    type="button"
+    onClick={() =>
+      fileInputRef.current?.click()
+    }
+    className="
+      absolute
+      -bottom-1
+      -right-1
+      h-7
+      w-7
+      rounded-full
+      bg-[#F96B00]
+      text-white
+      flex
+      items-center
+      justify-center
+      shadow-lg
+      opacity-0
+      group-hover:opacity-100
+      scale-90
+      group-hover:scale-100
+      transition-all
+      duration-200
+      hover:bg-[#ff7b1f]
+      z-10
+    "
+    title="Change profile image"
+  >
+    <Pencil size={14} />
+  </button>
+
+  {/* Hidden File Input */}
+  <input
+    ref={fileInputRef}
+    type="file"
+    accept="image/png,image/jpeg,image/jpg,image/webp"
+    className="hidden"
+    onChange={handleImageChange}
+  />
+</div>
 
           <div>
             {isEditing ? (
@@ -343,6 +485,7 @@ export default function ViewProfileModal({
 </button>
 
           <button
+          disabled
     onClick={() => {
         fetchUsers();
         setShowAssignModal(true);
@@ -355,6 +498,7 @@ export default function ViewProfileModal({
       text-gray-900
       dark:text-white
       font-semibold
+      
     "
 >
     Assign Client

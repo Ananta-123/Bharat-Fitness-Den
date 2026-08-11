@@ -18,14 +18,21 @@ export default function CreateBannerModal({
 
   const [formData, setFormData] = useState({
     title: "",
-    image: "",
     status: true,
   });
+
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const {
+      name,
+      value,
+      type,
+      checked,
+    } = e.target;
 
     setFormData((prev) => ({
       ...prev,
@@ -36,13 +43,44 @@ export default function CreateBannerModal({
     }));
   };
 
-  const resetForm = () => {
-    setFormData({
-      title: "",
-      image: "",
-      status: true,
-    });
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    // Check image type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file.");
+      return;
+    }
+
+    // Optional 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size must be less than 5MB.");
+      return;
+    }
+
+    // Store actual File
+    setImageFile(file);
+
+    // Create preview
+    const previewUrl =
+      URL.createObjectURL(file);
+
+    setImagePreview(previewUrl);
+
+    console.log("Selected banner image:", file);
   };
+
+  const resetForm = () => {
+  setFormData({
+    title: "",
+    status: true,
+  });
+
+  setImageFile(null);
+  setImagePreview("");
+};
 
   const handleClose = () => {
     resetForm();
@@ -50,26 +88,58 @@ export default function CreateBannerModal({
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!formData.title.trim()) return;
+  if (!formData.title.trim()) {
+    alert("Banner title is required.");
+    return;
+  }
 
-    if (!formData.image.trim()) return;
+  if (!imageFile) {
+    alert("Please select a banner image.");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      await createBanner(formData);
+    const data = new FormData();
 
-      await fetchBanners();
+    data.append(
+      "title",
+      formData.title
+    );
 
-      handleClose();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    data.append(
+      "status",
+      formData.status
+    );
+
+    data.append(
+      "image",
+      imageFile
+    );
+
+    console.log("Sending banner data:");
+    console.log("Title:", formData.title);
+    console.log("Status:", formData.status);
+    console.log("Image:", imageFile);
+
+    await createBanner(data);
+
+    await fetchBanners();
+
+    handleClose();
+
+  } catch (err) {
+    console.error(
+      "Failed to create banner:",
+      err
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (!isOpen) return null;
 
@@ -98,20 +168,18 @@ export default function CreateBannerModal({
             scale: 0.95,
           }}
           transition={{ duration: 0.25 }}
-          className={`w-full max-w-xl overflow-hidden rounded-2xl border ${
-            theme === "dark"
-              ? "border-white/10 bg-[#0B1020]"
-              : "border-gray-200 bg-white"
-          }`}
+          className={`w-full max-w-xl overflow-hidden rounded-2xl border ${theme === "dark"
+            ? "border-white/10 bg-[#0B1020]"
+            : "border-gray-200 bg-white"
+            }`}
         >
           {/* Header */}
 
           <div
-            className={`flex items-center justify-between border-b px-6 py-5 ${
-              theme === "dark"
-                ? "border-white/10"
-                : "border-gray-200"
-            }`}
+            className={`flex items-center justify-between border-b px-6 py-5 ${theme === "dark"
+              ? "border-white/10"
+              : "border-gray-200"
+              }`}
           >
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10">
@@ -127,11 +195,10 @@ export default function CreateBannerModal({
                 </h2>
 
                 <p
-                  className={`text-sm ${
-                    theme === "dark"
-                      ? "text-gray-400"
-                      : "text-gray-500"
-                  }`}
+                  className={`text-sm ${theme === "dark"
+                    ? "text-gray-400"
+                    : "text-gray-500"
+                    }`}
                 >
                   Add a promotional banner.
                 </p>
@@ -161,17 +228,16 @@ export default function CreateBannerModal({
                 placeholder="Enter banner title"
                 value={formData.title}
                 onChange={handleChange}
-                className={`w-full rounded-xl border px-4 py-3 outline-none focus:border-orange-500 ${
-                  theme === "dark"
-                    ? "border-white/10 bg-[#111827]"
-                    : "border-gray-300 bg-gray-50"
-                }`}
+                className={`w-full rounded-xl border px-4 py-3 outline-none focus:border-orange-500 ${theme === "dark"
+                  ? "border-white/10 bg-[#111827]"
+                  : "border-gray-300 bg-gray-50"
+                  }`}
               />
             </div>
 
             <div>
               <label className="mb-2 block text-sm font-medium">
-                Banner Image URL
+                Banner Image
               </label>
 
               <div className="relative">
@@ -181,36 +247,31 @@ export default function CreateBannerModal({
                 />
 
                 <input
-                  type="text"
+                  type="file"
+                  accept="image/*"
                   name="image"
-                  placeholder="https://example.com/banner.jpg"
-                  value={formData.image}
-                  onChange={handleChange}
-                  className={`w-full rounded-xl border py-3 pl-11 pr-4 outline-none focus:border-orange-500 ${
-                    theme === "dark"
+                  onChange={handleImageChange}
+                  className={`w-full rounded-xl border py-3 pl-11 pr-4 outline-none focus:border-orange-500 ${theme === "dark"
                       ? "border-white/10 bg-[#111827]"
                       : "border-gray-300 bg-gray-50"
-                  }`}
+                    }`}
                 />
               </div>
             </div>
 
-            {formData.image && (
-              <div>
-                <label className="mb-2 block text-sm font-medium">
-                  Preview
-                </label>
+            {imagePreview && (
+  <div>
+    <label className="mb-2 block text-sm font-medium">
+      Preview
+    </label>
 
-                <img
-                  src={formData.image}
-                  alt="Preview"
-                  className="h-48 w-full rounded-xl border object-cover"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </div>
-            )}
+    <img
+      src={imagePreview}
+      alt="Banner Preview"
+      className="h-48 w-full rounded-xl border object-cover"
+    />
+  </div>
+)}
 
             <div className="flex items-center gap-3">
               <input
@@ -231,20 +292,18 @@ export default function CreateBannerModal({
           {/* Footer */}
 
           <div
-            className={`flex justify-end gap-3 border-t px-6 py-5 ${
-              theme === "dark"
-                ? "border-white/10"
-                : "border-gray-200"
-            }`}
+            className={`flex justify-end gap-3 border-t px-6 py-5 ${theme === "dark"
+              ? "border-white/10"
+              : "border-gray-200"
+              }`}
           >
             <button
               type="button"
               onClick={handleClose}
-              className={`rounded-xl border px-5 py-2 ${
-                theme === "dark"
-                  ? "border-white/10 hover:bg-white/5"
-                  : "border-gray-300 hover:bg-gray-100"
-              }`}
+              className={`rounded-xl border px-5 py-2 ${theme === "dark"
+                ? "border-white/10 hover:bg-white/5"
+                : "border-gray-300 hover:bg-gray-100"
+                }`}
             >
               Cancel
             </button>

@@ -6,6 +6,9 @@ import {
   BarChart3,
   Pencil,
   Trash2,
+  Flame,
+  Clock,
+  ListChecks,
 } from "lucide-react";
 
 export default function WorkoutCard({
@@ -13,15 +16,26 @@ export default function WorkoutCard({
   onEdit,
   onDelete,
 }) {
+  // ==========================================
+  // Format Date
+  // ==========================================
+
   const formatDate = (date) => {
     if (!date) return "--";
 
-    return new Date(date).toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+    return new Date(date).toLocaleDateString(
+      "en-IN",
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }
+    );
   };
+
+  // ==========================================
+  // Difficulty Color
+  // ==========================================
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty?.toLowerCase()) {
@@ -39,6 +53,36 @@ export default function WorkoutCard({
     }
   };
 
+  // ==========================================
+  // Workout Days
+  // ==========================================
+
+  const workoutDays = workout?.days || [];
+
+  // ==========================================
+  // Total Exercises
+  // ==========================================
+
+  const totalExercises = workoutDays.reduce(
+    (total, day) =>
+      total + (day.exercises?.length || 0),
+    0
+  );
+
+  // ==========================================
+  // Exercise Names
+  // ==========================================
+
+  const exerciseNames = workoutDays.flatMap(
+    (day) =>
+      (day.exercises || []).map(
+        (exercise) =>
+          exercise.exerciseId?.name ||
+          exercise.exerciseId?.title ||
+          exercise.exerciseId?.exerciseName
+      )
+  );
+
   return (
     <motion.div
       whileHover={{
@@ -47,6 +91,7 @@ export default function WorkoutCard({
       }}
       transition={{ duration: 0.25 }}
       className="
+        overflow-hidden
         rounded-2xl
         border
         border-gray-200
@@ -61,15 +106,30 @@ export default function WorkoutCard({
         dark:hover:border-orange-500/40
       "
     >
-      {/* Header */}
+      {/* ========================================== */}
+      {/* HEADER */}
+      {/* ========================================== */}
 
-      <div className="flex items-start justify-between border-b border-gray-200 p-6 dark:border-slate-700">
-        <div className="flex gap-4">
+      <div
+        className="
+          flex
+          items-start
+          justify-between
+          border-b
+          border-gray-200
+          p-6
+          dark:border-slate-700
+        "
+      >
+        <div className="flex min-w-0 gap-4">
+          {/* Icon */}
+
           <div
             className="
               flex
               h-14
               w-14
+              shrink-0
               items-center
               justify-center
               rounded-xl
@@ -83,119 +143,477 @@ export default function WorkoutCard({
             <Dumbbell size={26} />
           </div>
 
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {workout.title}
+          {/* Title */}
+
+          <div className="min-w-0">
+            <h2
+              className="
+                truncate
+                text-xl
+                font-bold
+                text-gray-900
+                dark:text-white
+              "
+              title={workout.title}
+            >
+              {workout.title || "Untitled Workout"}
             </h2>
 
-            <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
-              {workout.goalGroupId?.name || "No Goal Group"}
+            <p
+              className="
+                mt-2
+                truncate
+                text-sm
+                text-gray-500
+                dark:text-slate-400
+              "
+            >
+              {workout.goalGroupId?.name ||
+                "No Goal Group"}
             </p>
           </div>
         </div>
 
+        {/* Difficulty */}
+
         <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${getDifficultyColor(
-            workout.difficulty
-          )}`}
+          className={`
+            ml-3
+            shrink-0
+            rounded-full
+            px-3
+            py-1
+            text-xs
+            font-semibold
+            capitalize
+            ${getDifficultyColor(
+              workout.difficulty
+            )}
+          `}
         >
-          {workout.difficulty}
+          {workout.difficulty || "--"}
         </span>
       </div>
 
-      {/* Body */}
+      {/* ========================================== */}
+      {/* BODY */}
+      {/* ========================================== */}
 
       <div className="space-y-5 p-6">
-        {/* Description */}
+
+        {/* ====================================== */}
+        {/* DESCRIPTION */}
+        {/* ====================================== */}
 
         <div>
-          <p className="text-sm leading-6 text-gray-600 dark:text-slate-300">
-            {workout.description || "No description available"}
+          <p
+            className="
+              line-clamp-3
+              text-sm
+              leading-6
+              text-gray-600
+              dark:text-slate-300
+            "
+          >
+            {workout.description ||
+              "No description available"}
           </p>
         </div>
 
-        {/* Goal Group */}
+        {/* ====================================== */}
+        {/* GOAL GROUP */}
+        {/* ====================================== */}
 
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-gray-500 dark:text-slate-400">
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          <span
+            className="
+              flex
+              items-center
+              gap-2
+              text-sm
+              text-gray-500
+              dark:text-slate-400
+            "
+          >
             <Target size={16} />
             Goal Group
           </span>
 
-          <span className="font-semibold text-gray-900 dark:text-white">
-            {workout.goalGroupId?.name || "--"}
+          <span
+            className="
+              max-w-[60%]
+              truncate
+              text-right
+              text-sm
+              font-semibold
+              text-gray-900
+              dark:text-white
+            "
+          >
+            {workout.goalGroupId?.name ||
+              "--"}
           </span>
         </div>
 
-        {/* Difficulty */}
+        {/* ====================================== */}
+        {/* DIFFICULTY */}
+        {/* ====================================== */}
 
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-gray-500 dark:text-slate-400">
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          <span
+            className="
+              flex
+              items-center
+              gap-2
+              text-sm
+              text-gray-500
+              dark:text-slate-400
+            "
+          >
             <BarChart3 size={16} />
             Difficulty
           </span>
 
-          <span className="capitalize font-semibold text-gray-900 dark:text-white">
-            {workout.difficulty}
+          <span
+            className="
+              text-sm
+              font-semibold
+              capitalize
+              text-gray-900
+              dark:text-white
+            "
+          >
+            {workout.difficulty || "--"}
           </span>
         </div>
 
-        {/* Workout Days */}
+        {/* ====================================== */}
+        {/* ESTIMATED CALORIES */}
+        {/* ====================================== */}
 
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-gray-500 dark:text-slate-400">
-            <CalendarDays size={16} />
-            Workout Days
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          <span
+            className="
+              flex
+              items-center
+              gap-2
+              text-sm
+              text-gray-500
+              dark:text-slate-400
+            "
+          >
+            <Flame size={16} />
+            Estimated Calories
           </span>
 
-          <span className="font-semibold text-gray-900 dark:text-white">
-            {workout.days?.length || 0}
+          <span
+            className="
+              text-sm
+              font-semibold
+              text-gray-900
+              dark:text-white
+            "
+          >
+            {workout.estimatedCalories != null
+              ? `${workout.estimatedCalories} kcal`
+              : "--"}
           </span>
         </div>
 
-        {/* Created */}
+        {/* ====================================== */}
+        {/* ESTIMATED DURATION */}
+        {/* ====================================== */}
 
-        <div className="flex items-center justify-between">
-          <span className="text-gray-500 dark:text-slate-400">
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          <span
+            className="
+              flex
+              items-center
+              gap-2
+              text-sm
+              text-gray-500
+              dark:text-slate-400
+            "
+          >
+            <Clock size={16} />
+            Estimated Duration
+          </span>
+
+          <span
+            className="
+              text-sm
+              font-semibold
+              text-gray-900
+              dark:text-white
+            "
+          >
+            {workout.estimatedDuration != null
+              ? `${workout.estimatedDuration} mins`
+              : "--"}
+          </span>
+        </div>
+
+        {/* ====================================== */}
+        {/* WORKOUT DAYS */}
+        {/* ====================================== */}
+
+        <div>
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+            "
+          >
+            <span
+              className="
+                flex
+                items-center
+                gap-2
+                text-sm
+                text-gray-500
+                dark:text-slate-400
+              "
+            >
+              <CalendarDays size={16} />
+              Workout Days
+            </span>
+
+            <span
+              className="
+                text-sm
+                font-semibold
+                text-gray-900
+                dark:text-white
+              "
+            >
+              {workoutDays.length}
+            </span>
+          </div>
+
+          {/* Day badges */}
+
+          {workoutDays.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {workoutDays.map(
+                (day, index) => (
+                  <span
+                    key={`${day.day}-${index}`}
+                    className="
+                      rounded-lg
+                      bg-orange-50
+                      px-2.5
+                      py-1
+                      text-xs
+                      font-medium
+                      text-orange-700
+
+                      dark:bg-orange-500/10
+                      dark:text-orange-400
+                    "
+                  >
+                    {day.day}
+                  </span>
+                )
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* ====================================== */}
+        {/* TOTAL EXERCISES */}
+        {/* ====================================== */}
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          <span
+            className="
+              flex
+              items-center
+              gap-2
+              text-sm
+              text-gray-500
+              dark:text-slate-400
+            "
+          >
+            <ListChecks size={16} />
+            Total Exercises
+          </span>
+
+          <span
+            className="
+              text-sm
+              font-semibold
+              text-gray-900
+              dark:text-white
+            "
+          >
+            {totalExercises}
+          </span>
+        </div>
+
+        {/* ====================================== */}
+        {/* EXERCISE NAMES */}
+        {/* ====================================== */}
+
+        {exerciseNames.length > 0 && (
+          <div>
+            <p
+              className="
+                mb-2
+                text-xs
+                font-semibold
+                uppercase
+                tracking-wide
+                text-gray-500
+                dark:text-slate-400
+              "
+            >
+              Exercises
+            </p>
+
+            <div className="flex flex-wrap gap-2">
+              {exerciseNames
+                .slice(0, 6)
+                .map(
+                  (name, index) =>
+                    name && (
+                      <span
+                        key={`${name}-${index}`}
+                        className="
+                          rounded-lg
+                          bg-gray-100
+                          px-2.5
+                          py-1.5
+                          text-xs
+                          font-medium
+                          text-gray-700
+
+                          dark:bg-slate-800
+                          dark:text-slate-300
+                        "
+                      >
+                        {name}
+                      </span>
+                    )
+                )}
+
+              {exerciseNames.length >
+                6 && (
+                <span
+                  className="
+                    rounded-lg
+                    bg-gray-100
+                    px-2.5
+                    py-1.5
+                    text-xs
+                    font-medium
+                    text-gray-500
+
+                    dark:bg-slate-800
+                    dark:text-slate-400
+                  "
+                >
+                  +{exerciseNames.length - 6} more
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ====================================== */}
+        {/* CREATED */}
+        {/* ====================================== */}
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            gap-4
+            border-t
+            border-gray-100
+            pt-4
+            dark:border-slate-800
+          "
+        >
+          <span
+            className="
+              text-sm
+              text-gray-500
+              dark:text-slate-400
+            "
+          >
             Created
           </span>
 
-          <span className="font-semibold text-gray-900 dark:text-white">
+          <span
+            className="
+              text-sm
+              font-semibold
+              text-gray-900
+              dark:text-white
+            "
+          >
             {formatDate(workout.createdAt)}
           </span>
         </div>
-
-        {/* Future Fields */}
-
-        {workout.duration && (
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 dark:text-slate-400">
-              Duration
-            </span>
-
-            <span className="font-semibold text-gray-900 dark:text-white">
-              {workout.duration} mins
-            </span>
-          </div>
-        )}
-
-        {workout.members && (
-          <div className="flex items-center justify-between">
-            <span className="text-gray-500 dark:text-slate-400">
-              Members
-            </span>
-
-            <span className="font-semibold text-gray-900 dark:text-white">
-              {workout.members}
-            </span>
-          </div>
-        )}
       </div>
 
-      {/* Footer */}
+      {/* ========================================== */}
+      {/* FOOTER */}
+      {/* ========================================== */}
 
-      <div className="flex items-center justify-end gap-3 border-t border-gray-200 p-5 dark:border-slate-700">
+      <div
+        className="
+          flex
+          items-center
+          justify-end
+          gap-3
+          border-t
+          border-gray-200
+          p-5
+          dark:border-slate-700
+        "
+      >
+        {/* Edit */}
+
         <motion.button
+          type="button"
           whileHover={{
             scale: 1.05,
           }}
@@ -228,7 +646,10 @@ export default function WorkoutCard({
           Edit
         </motion.button>
 
+        {/* Delete */}
+
         <motion.button
+          type="button"
           whileHover={{
             scale: 1.05,
           }}

@@ -51,11 +51,11 @@ export const sidebarData = [
     path: "/goalgroups",
     icon: Target,
   },
-   {
-    title: "Workouts Sessions",
-    path: "/workouts-sessions",
-    icon: CalendarClock,
-  },
+  //  {
+  //   title: "Workouts Sessions",
+  //   path: "/workouts-sessions",
+  //   icon: CalendarClock,
+  // },
   {
     title: "Workouts",
     path: "/workouts",
@@ -66,11 +66,11 @@ export const sidebarData = [
     path: "/exercise",
     icon: Dumbbell,
   },
-  {
-    title: "User Workouts",
-    path: "/user-workouts",
-    icon: ClipboardList,
-  },
+  // {
+  //   title: "User Workouts",
+  //   path: "/user-workouts",
+  //   icon: ClipboardList,
+  // },
   {
     title: "Diet Plans",
     path: "/diet-plans",
@@ -81,21 +81,21 @@ export const sidebarData = [
     path: "/supplements",
     icon: Pill,
   },
-  {
-    title: "Orders",
-    path: "/orders",
-    icon: Package ,
-  },
+  // {
+  //   title: "Orders",
+  //   path: "/orders",
+  //   icon: Package ,
+  // },
   {
     title: "Offers",
     path: "/offers",
     icon: BadgePercent,
   },
-  {
-    title: "Notifications",
-    path: "/notifications",
-    icon: Bell,
-  },
+  // {
+  //   title: "Notifications",
+  //   path: "/notifications",
+  //   icon: Bell,
+  // },
   {
     title: "Banners",
     path: "/banners",
@@ -107,13 +107,13 @@ export const sidebarData = [
     icon: BarChart3,
   },
   {
-    title: "Carts",
+    title: "Order",
     path: "/carts",
     icon: ShoppingCart,
   },
-   {
-    title: "Analytics",
-    path: "/analytics",
-    icon: ChartNoAxesCombined ,
-  },
+  //  {
+  //   title: "Analytics",
+  //   path: "/analytics",
+  //   icon: ChartNoAxesCombined ,
+  // },
 ];

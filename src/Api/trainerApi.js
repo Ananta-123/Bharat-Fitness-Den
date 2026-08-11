@@ -3,9 +3,6 @@ import axiosInstance from "../Api/axios.js";
 // GET ALL TRAINERS
 export const getAllTrainers = async () => {
   const response = await axiosInstance.get("/trainers");
-
-  console.log(response.data);
-
   return response.data;
 };
 

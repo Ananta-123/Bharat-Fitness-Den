@@ -205,23 +205,32 @@ export default function TrainerPage() {
               <div className="flex justify-between items-start">
                 <div className="flex gap-4">
                   <div
-                    className={`
-                    h-16 w-16
-                    rounded-2xl
-                    flex items-center justify-center
-                    font-bold text-xl
-                    border
-                    ${trainer.avatarColor === "green"
-                        ? "bg-green-500/10 border-green-500/30 text-green-500"
-                        : "bg-orange-500/10 border-orange-500/30 text-[#F96B00]"
-                      }
-                  `}
-                  >
-                    {trainer.name
-                      ?.split(" ")
-                      .map((word) => word[0])
-                      .join("")}
-                  </div>
+  className="
+    h-16 w-16
+    rounded-2xl
+    overflow-hidden
+    flex items-center justify-center
+    font-bold text-xl
+    border
+    border-orange-500/30
+    bg-orange-500/10
+    text-[#F96B00]
+  "
+>
+  {trainer.profileImage ? (
+    <img
+      src={trainer.profileImage}
+      alt={trainer.name || "Trainer"}
+      className="h-full w-full object-cover"
+    />
+  ) : (
+    trainer.name
+      ?.split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+  )}
+</div>
 
                   <div>
                     <h3 className="font-bold text-xl text-gray-900 dark:text-white">
@@ -270,7 +279,7 @@ export default function TrainerPage() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl p-4 text-center bg-gray-100 dark:bg-[#090D24]">
+                {/* <div className="rounded-2xl p-4 text-center bg-gray-100 dark:bg-[#090D24]">
                   <h4 className="text-2xl font-bold text-green-500">
                     {"N/A"}
                   </h4>
@@ -278,7 +287,7 @@ export default function TrainerPage() {
                   <p className="text-gray-500 dark:text-gray-400">
                     Rating
                   </p>
-                </div>
+                </div> */}
               </div>
 
               {/* CERTIFICATIONS */}

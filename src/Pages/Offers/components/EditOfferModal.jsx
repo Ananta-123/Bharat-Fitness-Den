@@ -7,6 +7,9 @@ import {
   CalendarDays,
   FileText,
   CheckCircle2,
+  Image as ImageIcon,
+  Percent,
+  IndianRupee,
 } from "lucide-react";
 
 export default function EditOfferModal({
@@ -22,20 +25,32 @@ export default function EditOfferModal({
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    imageUrl: null,
+    discountType: "percentage",
+    discountValue: "",
     startDate: "",
     endDate: "",
     status: true,
   });
 
-  // ==========================
+  const [imagePreview, setImagePreview] = useState(null);
+
+  // ==========================================
   // Load Offer Data
-  // ==========================
+  // ==========================================
 
   useEffect(() => {
     if (offer && isOpen) {
       setFormData({
         title: offer.title || "",
         description: offer.description || "",
+        imageUrl: null,
+        discountType: offer.discountType || "percentage",
+        discountValue:
+          offer.discountValue !== undefined &&
+          offer.discountValue !== null
+            ? offer.discountValue
+            : "",
         startDate: offer.startDate
           ? offer.startDate.split("T")[0]
           : "",
@@ -44,15 +59,42 @@ export default function EditOfferModal({
           : "",
         status: offer.status ?? true,
       });
+
+      // Existing image preview
+      setImagePreview(offer.imageUrl || null);
     }
   }, [offer, isOpen]);
 
-  // ==========================
+  // ==========================================
   // Input Change
-  // ==========================
+  // ==========================================
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const {
+      name,
+      value,
+      type,
+      checked,
+      files,
+    } = e.target;
+
+    // Image upload
+    if (type === "file") {
+      const file = files?.[0];
+
+      if (!file) return;
+
+      setFormData((prev) => ({
+        ...prev,
+        imageUrl: file,
+      }));
+
+      setImagePreview(
+        URL.createObjectURL(file)
+      );
+
+      return;
+    }
 
     setFormData((prev) => ({
       ...prev,
@@ -63,31 +105,132 @@ export default function EditOfferModal({
     }));
   };
 
-  // ==========================
+  // ==========================================
   // Submit
-  // ==========================
+  // ==========================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Title validation
+    if (!formData.title.trim()) {
+      alert("Please enter offer title.");
+      return;
+    }
+
+    // Description validation
+    if (!formData.description.trim()) {
+      alert("Please enter offer description.");
+      return;
+    }
+
+    // Discount type validation
+    if (!formData.discountType) {
+      alert("Please select discount type.");
+      return;
+    }
+
+    // Discount value validation
     if (
-      !formData.title.trim() ||
-      !formData.description.trim() ||
-      !formData.startDate ||
-      !formData.endDate
+      formData.discountValue === "" ||
+      Number(formData.discountValue) <= 0
     ) {
-      alert("Please fill all required fields.");
+      alert("Please enter a valid discount value.");
+      return;
+    }
+
+    // Percentage validation
+    if (
+      formData.discountType === "percentage" &&
+      Number(formData.discountValue) > 100
+    ) {
+      alert(
+        "Percentage discount cannot be more than 100%."
+      );
+      return;
+    }
+
+    // Date validation
+    if (!formData.startDate) {
+      alert("Please select start date.");
+      return;
+    }
+
+    if (!formData.endDate) {
+      alert("Please select end date.");
+      return;
+    }
+
+    if (
+      new Date(formData.endDate) <
+      new Date(formData.startDate)
+    ) {
+      alert(
+        "End date cannot be before start date."
+      );
       return;
     }
 
     try {
       setLoading(true);
 
-      await onSubmit(formData);
+      // ==========================================
+      // Create FormData
+      // ==========================================
+
+      const data = new FormData();
+
+      data.append(
+        "title",
+        formData.title
+      );
+
+      data.append(
+        "description",
+        formData.description
+      );
+
+      data.append(
+        "discountType",
+        formData.discountType
+      );
+
+      data.append(
+        "discountValue",
+        formData.discountValue
+      );
+
+      data.append(
+        "startDate",
+        formData.startDate
+      );
+
+      data.append(
+        "endDate",
+        formData.endDate
+      );
+
+      data.append(
+        "status",
+        formData.status
+      );
+
+      // Only send image if user selected a new one
+      if (formData.imageUrl) {
+        data.append(
+          "image",
+          formData.imageUrl
+        );
+      }
+
+      await onSubmit(data);
 
       onClose();
     } catch (err) {
-      console.error("Update Offer Error:", err);
+      console.error(
+        "Update Offer Error:",
+        err
+      );
     } finally {
       setLoading(false);
     }
@@ -122,11 +265,10 @@ export default function EditOfferModal({
           transition={{
             duration: 0.25,
           }}
-          className={`w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl border
-          ${
+          className={`w-full max-w-3xl max-h-[95vh] overflow-y-auto rounded-2xl shadow-2xl border ${
             theme === "dark"
-              ? "bg-[#10131F] border-gray-800"
-              : "bg-white border-gray-200"
+              ? "bg-[#10131F] border-gray-800 text-white"
+              : "bg-white border-gray-200 text-gray-900"
           }`}
         >
           {/* ==========================================
@@ -134,9 +276,7 @@ export default function EditOfferModal({
           ========================================== */}
 
           <div className="bg-gradient-to-r from-[#8B0000] to-[#F96B00] p-5 flex items-center justify-between">
-
             <div className="flex items-center gap-3">
-
               <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
                 <TicketPercent
                   className="text-white"
@@ -145,7 +285,6 @@ export default function EditOfferModal({
               </div>
 
               <div>
-
                 <h2 className="text-white text-xl font-bold">
                   Edit Offer
                 </h2>
@@ -153,12 +292,11 @@ export default function EditOfferModal({
                 <p className="text-orange-100 text-sm">
                   Update promotional offer details
                 </p>
-
               </div>
-
             </div>
 
             <button
+              type="button"
               onClick={onClose}
               className="p-2 rounded-lg hover:bg-white/20 transition"
             >
@@ -167,25 +305,23 @@ export default function EditOfferModal({
                 className="text-white"
               />
             </button>
-
           </div>
 
           {/* ==========================================
-              Form Starts Here
-              (Continue with Part 2)
+              Form
           ========================================== */}
 
           <form
             onSubmit={handleSubmit}
             className="p-6 space-y-6"
           >
-                        {/* ==========================================
+            {/* ==========================================
                 Offer Title
             ========================================== */}
 
             <div>
               <label className="block mb-2 font-medium">
-                Offer Title
+                Offer Title *
               </label>
 
               <div className="relative">
@@ -200,10 +336,9 @@ export default function EditOfferModal({
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="Enter offer title"
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border outline-none transition
-                  ${
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border outline-none transition ${
                     theme === "dark"
-                      ? "bg-[#161A2C] border-gray-700 text-white focus:border-orange-500"
+                      ? "bg-[#161A2C] border-gray-700 text-white placeholder-gray-500 focus:border-orange-500"
                       : "bg-gray-50 border-gray-300 text-gray-900 focus:border-orange-500"
                   }`}
                 />
@@ -216,7 +351,7 @@ export default function EditOfferModal({
 
             <div>
               <label className="block mb-2 font-medium">
-                Description
+                Description *
               </label>
 
               <div className="relative">
@@ -231,13 +366,161 @@ export default function EditOfferModal({
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Offer description..."
-                  className={`w-full pl-11 pr-4 py-3 rounded-xl border resize-none outline-none transition
-                  ${
+                  className={`w-full pl-11 pr-4 py-3 rounded-xl border resize-none outline-none transition ${
                     theme === "dark"
-                      ? "bg-[#161A2C] border-gray-700 text-white focus:border-orange-500"
+                      ? "bg-[#161A2C] border-gray-700 text-white placeholder-gray-500 focus:border-orange-500"
                       : "bg-gray-50 border-gray-300 text-gray-900 focus:border-orange-500"
                   }`}
                 />
+              </div>
+            </div>
+
+            {/* ==========================================
+                Offer Image
+            ========================================== */}
+
+            <div>
+              <label className="block mb-2 font-medium">
+                Offer Image
+              </label>
+
+              <div
+                className={`border-2 border-dashed rounded-xl p-4 ${
+                  theme === "dark"
+                    ? "border-gray-700 bg-[#161A2C]"
+                    : "border-gray-300 bg-gray-50"
+                }`}
+              >
+                <div className="flex flex-col items-center justify-center gap-3">
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="Offer preview"
+                      className="w-full max-h-52 object-cover rounded-xl"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                      <ImageIcon
+                        size={28}
+                        className="text-orange-500"
+                      />
+                    </div>
+                  )}
+
+                  <label className="cursor-pointer">
+                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#8B0000] to-[#F96B00] text-white font-medium">
+                      <ImageIcon size={17} />
+
+                      {imagePreview
+                        ? "Change Image"
+                        : "Choose Image"}
+                    </span>
+
+                    <input
+                      type="file"
+                      name="image"
+                      accept="image/*"
+                      onChange={handleChange}
+                      className="hidden"
+                    />
+                  </label>
+
+                  <p className="text-xs text-gray-500">
+                    Select a new image only if you want
+                    to replace the current image.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* ==========================================
+                Discount
+            ========================================== */}
+
+            <div>
+              <label className="block mb-2 font-medium">
+                Discount *
+              </label>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Discount Type */}
+
+                <div className="relative">
+                  {formData.discountType ===
+                  "percentage" ? (
+                    <Percent
+                      size={18}
+                      className="absolute left-4 top-3.5 text-orange-500"
+                    />
+                  ) : (
+                    <IndianRupee
+                      size={18}
+                      className="absolute left-4 top-3.5 text-orange-500"
+                    />
+                  )}
+
+                  <select
+                    name="discountType"
+                    value={formData.discountType}
+                    onChange={handleChange}
+                    className={`w-full pl-11 pr-4 py-3 rounded-xl border outline-none appearance-none ${
+                      theme === "dark"
+                        ? "bg-[#161A2C] border-gray-700 text-white focus:border-orange-500"
+                        : "bg-gray-50 border-gray-300 text-gray-900 focus:border-orange-500"
+                    }`}
+                  >
+                    <option value="percentage">
+                      Percentage (%)
+                    </option>
+
+                    <option value="fixed">
+                      Fixed Amount (₹)
+                    </option>
+                  </select>
+                </div>
+
+                {/* Discount Value */}
+
+                <div className="relative">
+                  {formData.discountType ===
+                  "percentage" ? (
+                    <Percent
+                      size={18}
+                      className="absolute left-4 top-3.5 text-orange-500"
+                    />
+                  ) : (
+                    <IndianRupee
+                      size={18}
+                      className="absolute left-4 top-3.5 text-orange-500"
+                    />
+                  )}
+
+                  <input
+                    type="number"
+                    name="discountValue"
+                    value={formData.discountValue}
+                    onChange={handleChange}
+                    min="0"
+                    max={
+                      formData.discountType ===
+                      "percentage"
+                        ? "100"
+                        : undefined
+                    }
+                    step="0.01"
+                    placeholder={
+                      formData.discountType ===
+                      "percentage"
+                        ? "30"
+                        : "500"
+                    }
+                    className={`w-full pl-11 pr-4 py-3 rounded-xl border outline-none ${
+                      theme === "dark"
+                        ? "bg-[#161A2C] border-gray-700 text-white placeholder-gray-500 focus:border-orange-500"
+                        : "bg-gray-50 border-gray-300 text-gray-900 focus:border-orange-500"
+                    }`}
+                  />
+                </div>
               </div>
             </div>
 
@@ -246,10 +529,11 @@ export default function EditOfferModal({
             ========================================== */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Start Date */}
 
               <div>
                 <label className="block mb-2 font-medium">
-                  Start Date
+                  Start Date *
                 </label>
 
                 <div className="relative">
@@ -263,8 +547,7 @@ export default function EditOfferModal({
                     name="startDate"
                     value={formData.startDate}
                     onChange={handleChange}
-                    className={`w-full pl-11 pr-4 py-3 rounded-xl border outline-none transition
-                    ${
+                    className={`w-full pl-11 pr-4 py-3 rounded-xl border outline-none transition ${
                       theme === "dark"
                         ? "bg-[#161A2C] border-gray-700 text-white focus:border-orange-500"
                         : "bg-gray-50 border-gray-300 text-gray-900 focus:border-orange-500"
@@ -273,9 +556,11 @@ export default function EditOfferModal({
                 </div>
               </div>
 
+              {/* End Date */}
+
               <div>
                 <label className="block mb-2 font-medium">
-                  End Date
+                  End Date *
                 </label>
 
                 <div className="relative">
@@ -289,8 +574,7 @@ export default function EditOfferModal({
                     name="endDate"
                     value={formData.endDate}
                     onChange={handleChange}
-                    className={`w-full pl-11 pr-4 py-3 rounded-xl border outline-none transition
-                    ${
+                    className={`w-full pl-11 pr-4 py-3 rounded-xl border outline-none transition ${
                       theme === "dark"
                         ? "bg-[#161A2C] border-gray-700 text-white focus:border-orange-500"
                         : "bg-gray-50 border-gray-300 text-gray-900 focus:border-orange-500"
@@ -298,7 +582,6 @@ export default function EditOfferModal({
                   />
                 </div>
               </div>
-
             </div>
 
             {/* ==========================================
@@ -306,8 +589,7 @@ export default function EditOfferModal({
             ========================================== */}
 
             <div
-              className={`rounded-xl border p-4 flex items-center justify-between
-              ${
+              className={`rounded-xl border p-4 flex items-center justify-between ${
                 theme === "dark"
                   ? "border-gray-700 bg-[#161A2C]"
                   : "border-gray-200 bg-gray-50"
@@ -318,8 +600,7 @@ export default function EditOfferModal({
 
                 <div>
                   <h4
-                    className={`font-semibold
-                    ${
+                    className={`font-semibold ${
                       theme === "dark"
                         ? "text-white"
                         : "text-gray-900"
@@ -329,8 +610,7 @@ export default function EditOfferModal({
                   </h4>
 
                   <p
-                    className={`text-sm
-                    ${
+                    className={`text-sm ${
                       theme === "dark"
                         ? "text-gray-400"
                         : "text-gray-500"
@@ -355,13 +635,12 @@ export default function EditOfferModal({
             ========================================== */}
 
             <div className="flex justify-end gap-3 pt-4">
-
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 type="button"
                 onClick={onClose}
-                className={`px-6 py-3 rounded-xl font-medium border transition
-                ${
+                disabled={loading}
+                className={`px-6 py-3 rounded-xl font-medium border transition ${
                   theme === "dark"
                     ? "border-gray-700 hover:bg-gray-800 text-white"
                     : "border-gray-300 hover:bg-gray-100 text-gray-700"
@@ -377,15 +656,15 @@ export default function EditOfferModal({
                 type="submit"
                 className="px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-[#8B0000] to-[#F96B00] hover:shadow-lg hover:shadow-orange-500/30 disabled:opacity-60"
               >
-                {loading ? "Updating..." : "Update Offer"}
+                {loading
+                  ? "Updating..."
+                  : "Update Offer"}
               </motion.button>
-
             </div>
-
           </form>
-
         </motion.div>
       </motion.div>
     </AnimatePresence>
   );
 }
+

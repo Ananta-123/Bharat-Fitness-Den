@@ -1,22 +1,51 @@
+
 import { motion } from "framer-motion";
 import { Building2 } from "lucide-react";
 import { useState } from "react";
 
 import AddBranchModal from "./AddBranchModal";
 
-const BranchHeader = ({onBranchCreate,}) => {
-  const [openModal, setOpenModal] = useState(false);
+const BranchHeader = ({
+  branches = [],
+  onBranchCreate,
+}) => {
+  const [openModal, setOpenModal] =
+    useState(false);
 
-    const [branches, setBranches] = useState([]);
+  // ==========================================
+  // TOTAL BRANCHES
+  // ==========================================
+
+  const totalBranches =
+    branches.length;
+
+  // ==========================================
+  // TOTAL MEMBERS / USERS
+  // ==========================================
+
+  const totalMembers =
+    branches.reduce(
+      (total, branch) =>
+        total +
+        Number(
+          branch.totalUsers || 0
+        ),
+      0
+    );
+
+  // ==========================================
+  // HANDLE CREATE
+  // ==========================================
 
   const handleCreateBranch = (
-  newBranch
-) => {
-  setBranches((prev) => [
-    ...prev,
-    newBranch,
-  ]);
-};
+    newBranch
+  ) => {
+    if (onBranchCreate) {
+      onBranchCreate(newBranch);
+    }
+
+    setOpenModal(false);
+  };
 
   return (
     <>
@@ -30,6 +59,8 @@ const BranchHeader = ({onBranchCreate,}) => {
           mb-8
         "
       >
+        {/* HEADER TEXT */}
+
         <div>
           <h1
             className="
@@ -49,9 +80,19 @@ const BranchHeader = ({onBranchCreate,}) => {
               mt-1
             "
           >
-            4 branches · 2327 total members
+            {totalBranches}{" "}
+            {totalBranches === 1
+              ? "branch"
+              : "branches"}{" "}
+            ·{" "}
+            {totalMembers.toLocaleString(
+              "en-IN"
+            )}{" "}
+            total members
           </p>
         </div>
+
+        {/* ADD BRANCH BUTTON */}
 
         <motion.button
           whileHover={{
@@ -76,9 +117,12 @@ const BranchHeader = ({onBranchCreate,}) => {
           "
         >
           <Building2 size={18} />
+
           Add Branch
         </motion.button>
       </div>
+
+      {/* ADD BRANCH MODAL */}
 
       <AddBranchModal
         isOpen={openModal}
@@ -86,7 +130,7 @@ const BranchHeader = ({onBranchCreate,}) => {
           setOpenModal(false)
         }
         onSubmit={
-          onBranchCreate
+          handleCreateBranch
         }
       />
     </>
@@ -94,3 +138,4 @@ const BranchHeader = ({onBranchCreate,}) => {
 };
 
 export default BranchHeader;
+

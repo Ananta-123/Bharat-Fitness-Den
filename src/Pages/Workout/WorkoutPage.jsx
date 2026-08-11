@@ -16,6 +16,8 @@ import {
 
 import { getAllGoals } from "../../Api/goalGroupApi";
 
+import { getAllExercises } from "../../Api/exerciseApi.js"
+
 export default function WorkoutPage() {
   // ===============================
   // STATES
@@ -23,6 +25,7 @@ export default function WorkoutPage() {
 
   const [workouts, setWorkouts] = useState([]);
   const [goalGroups, setGoalGroups] = useState([]);
+  const [exercises, setExercises] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -69,12 +72,32 @@ export default function WorkoutPage() {
   };
 
   // ===============================
+  // load excirsize
+  // ===============================
+
+  const loadExercises = async () => {
+  try {
+    const response = await getAllExercises();
+
+    console.log("Exercises API response:", response);
+
+    setExercises(response.exercises || []);
+  } catch (error) {
+    console.error(
+      "Failed to load exercises:",
+      error
+    );
+  }
+};
+
+  // ===============================
   // INITIAL LOAD
   // ===============================
 
   useEffect(() => {
     fetchWorkouts();
     fetchGoalGroups();
+    loadExercises();
   }, []);
 
   // ===============================
@@ -236,6 +259,7 @@ export default function WorkoutPage() {
         onClose={() => setShowAddModal(false)}
         onSubmit={handleCreateWorkout}
         goalGroups={goalGroups}
+        exercises={exercises}
       />
 
       {/* =========================
@@ -246,6 +270,7 @@ export default function WorkoutPage() {
         isOpen={showEditModal}
         workout={selectedWorkout}
         goalGroups={goalGroups}
+        exercises={exercises}
         onClose={() => {
           setShowEditModal(false);
           setSelectedWorkout(null);

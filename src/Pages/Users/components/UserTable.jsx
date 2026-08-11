@@ -83,16 +83,7 @@ const UserTable = ({ users, onEdit, onDelete, }) => {
               BRANCH
             </th>
 
-            <th
-              className="
-                px-6 py-4
-                text-xs
-                font-semibold
-                tracking-wider
-              "
-            >
-              WORKOUTS
-            </th>
+            
 
             <th
               className="

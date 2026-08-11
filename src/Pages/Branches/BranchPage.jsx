@@ -95,6 +95,7 @@ const handleBranchCreate = (
       "
     >
       <BranchHeader
+      branches={branches}
   onBranchCreate={
     handleBranchCreate
   }

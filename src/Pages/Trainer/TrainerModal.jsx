@@ -17,93 +17,126 @@ export default function TrainerModal({
     branchId: "",
     specialization: "",
     experience: "",
-    profileImage: "",
+    profileImage: null,
   });
 
 
   const [loading, setLoading] = useState(false);
-const [error, setError] = useState("");
-const [branches, setBranches] = useState([]);
-useEffect(() => {
-  fetchBranches();
-}, []);
+  const [error, setError] = useState("");
+  const [branches, setBranches] = useState([]);
+  useEffect(() => {
+    fetchBranches();
+  }, []);
 
-const fetchBranches =
-  async () => {
-    try {
-      const data =
-        await getAllBranches();
+  const fetchBranches =
+    async () => {
+      try {
+        const data =
+          await getAllBranches();
 
-      console.log(
-        "Branches:",
-        data
-      );
+        console.log(
+          "Branches:",
+          data
+        );
 
-      setBranches(
-        data.branches || []
-      );
-    } catch (error) {
-      console.error(
-        "Failed to fetch branches:",
-        error
-      );
-    }
-  };
+        setBranches(
+          data.branches || []
+        );
+      } catch (error) {
+        console.error(
+          "Failed to fetch branches:",
+          error
+        );
+      }
+    };
 
   const handleChange = (e) => {
+    const { name, value, files, type } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]:
+        type === "file"
+          ? files?.[0] || null
+          : value,
     }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    setLoading(true);
-    setError("");
+    try {
+      setLoading(true);
+      setError("");
 
-    const trainerData = {
-      ...formData,
-      experience: Number(formData.experience),
-    };
+      const data = new FormData();
 
-    const response =
-  await createTrainer(
-    trainerData
-  );
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+      data.append("phone", formData.phone);
+      data.append("branchId", formData.branchId);
+      data.append(
+        "specialization",
+        formData.specialization
+      );
+      data.append(
+        "experience",
+        Number(formData.experience || 0)
+      );
 
-await fetchTrainers();
+      // Add image
+      if (formData.profileImage) {
+        data.append(
+          "profileImage",
+          formData.profileImage
+        );
+      }
 
-onClose();
+      console.log(
+        "Sending trainer data:"
+      );
 
-    console.log(response);
+      for (const [key, value] of data.entries()) {
+        console.log(key, value);
+      }
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      branchId: "",
-      specialization: "",
-      experience: "",
-      profileImage: "",
-    });
+      const response =
+        await createTrainer(data);
 
-    onClose();
+      console.log(
+        "Created Trainer:",
+        response
+      );
 
-  } catch (error) {
-    console.error(error);
+      await fetchTrainers();
 
-    setError(
-      error.response?.data?.message ||
-      "Failed to create trainer"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      // Reset
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        branchId: "",
+        specialization: "",
+        experience: "",
+        profileImage: null,
+      });
+
+      onClose();
+
+    } catch (error) {
+      console.error(
+        "Create Trainer Error:",
+        error
+      );
+
+      setError(
+        error.response?.data?.message ||
+        "Failed to create trainer"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -302,7 +335,7 @@ onClose();
               {/* Profile Image */}
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm text-zinc-300">
-                  Profile Image URL
+                  Profile Image
                 </label>
 
                 <div className="relative">
@@ -312,32 +345,52 @@ onClose();
                   />
 
                   <input
-                    type="text"
+                    type="file"
                     name="profileImage"
-                    value={formData.profileImage}
+                    accept="image/png,image/jpeg,image/jpg,image/webp"
                     onChange={handleChange}
-                    placeholder="https://example.com/profile.jpg"
-                    className="w-full rounded-xl border border-zinc-700 bg-zinc-900 py-3 pl-10 pr-4 text-white outline-none focus:border-orange-500"
+                    className="
+    w-full
+    rounded-xl
+    border border-zinc-700
+    bg-zinc-900
+    py-3
+    pl-10
+    pr-4
+    text-white
+    outline-none
+    focus:border-orange-500
+  "
                   />
                 </div>
 
                 {formData.profileImage && (
                   <img
-                    src={formData.profileImage}
+                    src={URL.createObjectURL(
+                      formData.profileImage
+                    )}
                     alt="Preview"
-                    className="mt-4 h-24 w-24 rounded-full border border-zinc-700 object-cover"
+                    className="
+      mt-4
+      h-24
+      w-24
+      rounded-full
+      border
+      border-orange-500/30
+      object-cover
+    "
                   />
                 )}
               </div>
             </div>
 
             {
-  error && (
-    <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-red-400 text-sm">
-      {error}
-    </div>
-  )
-}
+              error && (
+                <div className="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-red-400 text-sm">
+                  {error}
+                </div>
+              )
+            }
 
             {/* Footer */}
             <div className="mt-8 flex justify-end gap-3">
@@ -350,14 +403,14 @@ onClose();
               </button>
 
               <button
-  type="submit"
-  disabled={loading}
-  className="rounded-xl bg-gradient-to-r from-red-700 to-orange-500 px-6 py-3 font-semibold text-white disabled:opacity-50"
->
-  {loading
-    ? "Creating..."
-    : "Create Trainer"}
-</button>
+                type="submit"
+                disabled={loading}
+                className="rounded-xl bg-gradient-to-r from-red-700 to-orange-500 px-6 py-3 font-semibold text-white disabled:opacity-50"
+              >
+                {loading
+                  ? "Creating..."
+                  : "Create Trainer"}
+              </button>
             </div>
           </form>
         </motion.div>

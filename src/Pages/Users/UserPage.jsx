@@ -136,7 +136,8 @@ if (loading) {
           </p>
         </div>
 
-        <motion.button
+      {/* add user access later */}
+        {/* <motion.button
           whileHover={{
             scale: 1.05,
           }}
@@ -154,7 +155,7 @@ if (loading) {
         >
           <Plus size={18} />
           Add Member
-        </motion.button>
+        </motion.button> */}
       </div>
 
       {/* SEARCH */}

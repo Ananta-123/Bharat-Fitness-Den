@@ -119,7 +119,7 @@ const Sidebar = ({
     "
             >
               <img
-                src="https://res.cloudinary.com/dl58sdjnk/image/upload/v1781027063/ChatGPT_Image_Jun_9_2026_11_13_48_PM_cpas14.png"
+                src="https://res.cloudinary.com/dl58sdjnk/image/upload/v1781975759/ChatGPT_Image_Jun_20_2026_10_45_43_PM_yvuejo.png"
                 alt="logo"
                 className="
         w-14 h-14

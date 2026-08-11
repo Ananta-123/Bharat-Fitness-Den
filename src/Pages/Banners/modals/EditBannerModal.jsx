@@ -20,9 +20,14 @@ export default function EditBannerModal({
 
   const [formData, setFormData] = useState({
     title: "",
-    image: "",
     status: true,
   });
+
+  // Actual selected image file
+  const [imageFile, setImageFile] = useState(null);
+
+  // Image shown in preview
+  const [imagePreview, setImagePreview] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -30,14 +35,32 @@ export default function EditBannerModal({
     if (banner) {
       setFormData({
         title: banner.title || "",
-        image: banner.image || "",
         status: banner.status ?? true,
       });
+
+      setImageFile(null);
+
+      // Existing banner image
+      if (banner.image) {
+        setImagePreview(
+          banner.image.startsWith("http")
+            ? banner.image
+            : `http://localhost:5000${banner.image}`
+        );
+      } else {
+        setImagePreview("");
+      }
     }
   }, [banner]);
 
+  // Normal inputs
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const {
+      name,
+      value,
+      type,
+      checked,
+    } = e.target;
 
     setFormData((prev) => ({
       ...prev,
@@ -48,12 +71,42 @@ export default function EditBannerModal({
     }));
   };
 
+  // IMAGE INPUT
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    // Validate image
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file.");
+      return;
+    }
+
+    // Optional 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size must be less than 5MB.");
+      return;
+    }
+
+    // Store actual File
+    setImageFile(file);
+
+    // Create preview
+    const previewUrl =
+      URL.createObjectURL(file);
+
+    setImagePreview(previewUrl);
+  };
+
   const resetForm = () => {
     setFormData({
       title: "",
-      image: "",
       status: true,
     });
+
+    setImageFile(null);
+    setImagePreview("");
   };
 
   const handleClose = () => {
@@ -64,23 +117,53 @@ export default function EditBannerModal({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.title.trim()) return;
-
-    if (!formData.image.trim()) return;
+    if (!formData.title.trim()) {
+      alert("Banner title is required.");
+      return;
+    }
 
     try {
       setLoading(true);
 
+      // Create multipart form
+      const data = new FormData();
+
+      data.append(
+        "title",
+        formData.title
+      );
+
+      data.append(
+        "status",
+        formData.status
+      );
+
+      // Only send image if user selected a new one
+      if (imageFile) {
+        data.append(
+          "image",
+          imageFile
+        );
+      }
+
+      console.log(
+        "Banner image:",
+        imageFile
+      );
+
       await updateBanner(
         banner._id,
-        formData
+        data
       );
 
       await fetchBanners();
 
       handleClose();
     } catch (err) {
-      console.error(err);
+      console.error(
+        "Failed to update banner:",
+        err
+      );
     } finally {
       setLoading(false);
     }
@@ -91,7 +174,13 @@ export default function EditBannerModal({
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-5"
+        className="
+          fixed inset-0 z-50
+          flex items-center justify-center
+          bg-black/60
+          backdrop-blur-sm
+          p-5
+        "
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -121,7 +210,7 @@ export default function EditBannerModal({
               : "border-gray-200 bg-white"
           }`}
         >
-          {/* Header */}
+          {/* HEADER */}
 
           <div
             className={`flex items-center justify-between border-b px-6 py-5 ${
@@ -164,9 +253,12 @@ export default function EditBannerModal({
             </button>
           </div>
 
-          {/* Body */}
+          {/* BODY */}
 
           <div className="space-y-5 p-6">
+
+            {/* TITLE */}
+
             <div>
               <label className="mb-2 block text-sm font-medium">
                 Banner Title
@@ -186,23 +278,30 @@ export default function EditBannerModal({
               />
             </div>
 
+            {/* IMAGE */}
+
             <div>
               <label className="mb-2 block text-sm font-medium">
-                Banner Image URL
+                Banner Image
               </label>
 
               <div className="relative">
                 <Upload
                   size={18}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  className="
+                    absolute
+                    left-4
+                    top-1/2
+                    -translate-y-1/2
+                    text-gray-400
+                  "
                 />
 
                 <input
-                  type="text"
+                  type="file"
+                  accept="image/*"
                   name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  placeholder="https://example.com/banner.jpg"
+                  onChange={handleImageChange}
                   className={`w-full rounded-xl border py-3 pl-11 pr-4 outline-none transition focus:border-orange-500 ${
                     theme === "dark"
                       ? "border-white/10 bg-[#111827]"
@@ -210,24 +309,35 @@ export default function EditBannerModal({
                   }`}
                 />
               </div>
+
+              <p className="mt-2 text-xs text-gray-500">
+                JPG, PNG or WebP. Maximum 5MB.
+              </p>
             </div>
 
-            {formData.image && (
+            {/* PREVIEW */}
+
+            {imagePreview && (
               <div>
                 <label className="mb-2 block text-sm font-medium">
                   Preview
                 </label>
 
                 <img
-                  src={formData.image}
+                  src={imagePreview}
                   alt="Banner Preview"
-                  className="h-52 w-full rounded-xl border object-cover"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
+                  className="
+                    h-52
+                    w-full
+                    rounded-xl
+                    border
+                    object-cover
+                  "
                 />
               </div>
             )}
+
+            {/* STATUS */}
 
             <div className="flex items-center gap-3">
               <input
@@ -248,7 +358,7 @@ export default function EditBannerModal({
             </div>
           </div>
 
-          {/* Footer */}
+          {/* FOOTER */}
 
           <div
             className={`flex justify-end gap-3 border-t px-6 py-5 ${
@@ -273,7 +383,20 @@ export default function EditBannerModal({
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.96 }}
               disabled={loading}
-              className="flex items-center gap-2 rounded-xl bg-orange-600 px-5 py-2 text-white transition hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="
+                flex
+                items-center
+                gap-2
+                rounded-xl
+                bg-orange-600
+                px-5
+                py-2
+                text-white
+                transition
+                hover:bg-orange-700
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
             >
               <Save size={18} />
 

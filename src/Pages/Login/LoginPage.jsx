@@ -194,7 +194,7 @@ const token = localStorage.getItem("token");
                   "
                 >
                   <img
-                    src="https://res.cloudinary.com/dl58sdjnk/image/upload/v1781027063/ChatGPT_Image_Jun_9_2026_11_13_48_PM_cpas14.png"
+                    src="https://res.cloudinary.com/dl58sdjnk/image/upload/v1781975759/ChatGPT_Image_Jun_20_2026_10_45_43_PM_yvuejo.png"
                     alt="logo"
                     className="w-24 scale-150 object-contain xl:w-32"
                   />
@@ -533,7 +533,7 @@ const token = localStorage.getItem("token");
                 </div>
 
                 {/* OPTIONS */}
-                <div className="flex items-center justify-between gap-4">
+                {/* <div className="flex items-center justify-between gap-4">
                   <label className="flex items-center gap-3">
                     <input
                       type="checkbox"
@@ -550,7 +550,7 @@ const token = localStorage.getItem("token");
                   </label>
 
                   
-                </div>
+                </div> */}
 
                 {/* BUTTON */}
                 <motion.button

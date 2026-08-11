@@ -1,3 +1,4 @@
+
 import {
   Users,
   DollarSign,
@@ -5,37 +6,97 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-const stats = [
-  {
-    title: "Total Members",
-    value: "2,327",
-    icon: Users,
-    color: "text-lime-400",
-  },
+const BranchStats = ({
+  branches = [],
+  revenueReport = [],
+}) => {
+  // ==========================================
+  // TOTAL MEMBERS
+  // ==========================================
 
-  {
-    title: "Combined Revenue",
-    value: "$88,420",
-    icon: DollarSign,
-    color: "text-orange-400",
-  },
+  const totalMembers = branches.reduce(
+    (total, branch) =>
+      total + Number(branch.totalUsers || 0),
+    0
+  );
 
-  {
-    title: "Total Trainers",
-    value: "28",
-    icon: Activity,
-    color: "text-yellow-400",
-  },
+  // ==========================================
+  // TOTAL TRAINERS
+  // ==========================================
 
-  {
-    title: "Avg Capacity",
-    value: "65%",
-    icon: TrendingUp,
-    color: "text-red-400",
-  },
-];
+  const totalTrainers = branches.reduce(
+    (total, branch) =>
+      total + Number(branch.totalTrainers || 0),
+    0
+  );
 
-const BranchStats = () => {
+  // ==========================================
+  // COMBINED REVENUE
+  // ==========================================
+
+  const combinedRevenue = revenueReport.reduce(
+    (total, item) => {
+      return (
+        total +
+        Number(
+          item.revenue ||
+            item.totalRevenue ||
+            item.amount ||
+            0
+        )
+      );
+    },
+    0
+  );
+
+  // ==========================================
+  // FORMAT CURRENCY
+  // ==========================================
+
+  const formatCurrency = (value) => {
+    return `₹${Number(value || 0).toLocaleString(
+      "en-IN"
+    )}`;
+  };
+
+  // ==========================================
+  // STATS
+  // ==========================================
+
+  const stats = [
+    {
+      title: "Total Members",
+      value: totalMembers.toLocaleString("en-IN"),
+      icon: Users,
+      color: "text-lime-400",
+    },
+
+    {
+      title: "Combined Revenue",
+      value: formatCurrency(
+        combinedRevenue
+      ),
+      icon: DollarSign,
+      color: "text-orange-400",
+    },
+
+    {
+      title: "Total Trainers",
+      value: totalTrainers.toLocaleString(
+        "en-IN"
+      ),
+      icon: Activity,
+      color: "text-yellow-400",
+    },
+
+    {
+      title: "Avg Capacity",
+      value: "N/A",
+      icon: TrendingUp,
+      color: "text-red-400",
+    },
+  ];
+
   return (
     <div
       className="
@@ -59,13 +120,10 @@ const BranchStats = () => {
               border
               border-gray-200
               dark:border-orange-500/20
-
               bg-white
               dark:bg-[#050816]
-
               shadow-sm
               dark:shadow-none
-
               transition-all
             "
           >
@@ -100,3 +158,4 @@ const BranchStats = () => {
 };
 
 export default BranchStats;
+

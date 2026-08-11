@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { X, Package, Plus, Trash2, Image, Tag, DollarSign, Boxes, Weight, Palette, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const EditProductModal = ({
@@ -9,8 +9,11 @@ const EditProductModal = ({
   product,
   categories = [],
 }) => {
+  // ==========================================
+  // Initial State
+  // ==========================================
 
-  const [form, setForm] = useState({
+  const initialState = {
     name: "",
     categoryId: "",
     brand: "",
@@ -18,349 +21,1467 @@ const EditProductModal = ({
     price: "",
     salePrice: "",
     stock: "",
-  });
+    images: [""],
+    flavors: [""],
+    weight: "",
+    status: true,
+  };
+
+  const [form, setForm] =
+    useState(initialState);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [errors, setErrors] =
+    useState({});
+
+  // ==========================================
+  // Populate Form
+  // ==========================================
 
   useEffect(() => {
+    if (!product || !open) return;
 
-    if (product) {
+    setForm({
+      name: product.name || "",
 
-      setForm({
-        name: product.name || "",
-        categoryId: product.categoryId?._id || "",
-        brand: product.brand || "",
-        description: product.description || "",
-        price: product.price || "",
-        salePrice: product.salePrice || "",
-        stock: product.stock || "",
-      });
+      categoryId:
+        product.categoryId?._id ||
+        product.categoryId ||
+        "",
 
-    }
+      brand: product.brand || "",
 
-  }, [product]);
+      description:
+        product.description || "",
+
+      price:
+        product.price ?? "",
+
+      salePrice:
+        product.salePrice ?? "",
+
+      stock:
+        product.stock ?? "",
+
+      images:
+        Array.isArray(product.images) &&
+        product.images.length > 0
+          ? product.images
+          : [""],
+
+      flavors:
+        Array.isArray(product.flavors) &&
+        product.flavors.length > 0
+          ? product.flavors
+          : [""],
+
+      weight:
+        product.weight || "",
+
+      status:
+        product.status ?? true,
+    });
+
+    setErrors({});
+  }, [product, open]);
+
+  // ==========================================
+  // Input Change
+  // ==========================================
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
+    const {
+      name,
+      value,
+      type,
+      checked,
+    } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+
+      [name]:
+        type === "checkbox"
+          ? checked
+          : value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  // ==========================================
+  // Image Change
+  // ==========================================
+
+  const handleImageChange = (
+    index,
+    value
+  ) => {
+    setForm((prev) => {
+      const updatedImages = [
+        ...prev.images,
+      ];
+
+      updatedImages[index] = value;
+
+      return {
+        ...prev,
+        images: updatedImages,
+      };
     });
   };
 
-  const handleSubmit = (e) => {
+  // ==========================================
+  // Add Image
+  // ==========================================
+
+  const addImage = () => {
+    setForm((prev) => ({
+      ...prev,
+
+      images: [
+        ...prev.images,
+        "",
+      ],
+    }));
+  };
+
+  // ==========================================
+  // Remove Image
+  // ==========================================
+
+  const removeImage = (index) => {
+    setForm((prev) => {
+      if (prev.images.length === 1) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+
+        images: prev.images.filter(
+          (_, i) => i !== index
+        ),
+      };
+    });
+  };
+
+  // ==========================================
+  // Flavor Change
+  // ==========================================
+
+  const handleFlavorChange = (
+    index,
+    value
+  ) => {
+    setForm((prev) => {
+      const updatedFlavors = [
+        ...prev.flavors,
+      ];
+
+      updatedFlavors[index] = value;
+
+      return {
+        ...prev,
+        flavors: updatedFlavors,
+      };
+    });
+  };
+
+  // ==========================================
+  // Add Flavor
+  // ==========================================
+
+  const addFlavor = () => {
+    setForm((prev) => ({
+      ...prev,
+
+      flavors: [
+        ...prev.flavors,
+        "",
+      ],
+    }));
+  };
+
+  // ==========================================
+  // Remove Flavor
+  // ==========================================
+
+  const removeFlavor = (index) => {
+    setForm((prev) => {
+      if (prev.flavors.length === 1) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+
+        flavors: prev.flavors.filter(
+          (_, i) => i !== index
+        ),
+      };
+    });
+  };
+
+  // ==========================================
+  // Validation
+  // ==========================================
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!form.name.trim()) {
+      newErrors.name =
+        "Product name is required";
+    }
+
+    if (!form.categoryId) {
+      newErrors.categoryId =
+        "Category is required";
+    }
+
+    if (!form.brand.trim()) {
+      newErrors.brand =
+        "Brand is required";
+    }
+
+    if (
+      form.price === "" ||
+      Number(form.price) < 0
+    ) {
+      newErrors.price =
+        "Valid price is required";
+    }
+
+    if (
+      form.salePrice !== "" &&
+      Number(form.salePrice) < 0
+    ) {
+      newErrors.salePrice =
+        "Sale price cannot be negative";
+    }
+
+    if (
+      form.stock === "" ||
+      Number(form.stock) < 0
+    ) {
+      newErrors.stock =
+        "Valid stock is required";
+    }
+
+    if (
+      form.salePrice !== "" &&
+      Number(form.salePrice) >
+        Number(form.price)
+    ) {
+      newErrors.salePrice =
+        "Sale price cannot be greater than price";
+    }
+
+    setErrors(newErrors);
+
+    return (
+      Object.keys(newErrors).length === 0
+    );
+  };
+
+  // ==========================================
+  // Submit
+  // ==========================================
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    onSubmit({
-      ...form,
-      price: Number(form.price),
-      salePrice: Number(form.salePrice),
-      stock: Number(form.stock),
-    });
+    if (!validate()) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // ========================================
+      // Clean Images
+      // ========================================
+
+      const cleanedImages =
+        form.images
+          .map((image) =>
+            image.trim()
+          )
+          .filter(
+            (image) => image !== ""
+          );
+
+      // ========================================
+      // Clean Flavors
+      // ========================================
+
+      const cleanedFlavors =
+        form.flavors
+          .map((flavor) =>
+            flavor.trim()
+          )
+          .filter(
+            (flavor) => flavor !== ""
+          );
+
+      // ========================================
+      // Update Payload
+      // ========================================
+
+      const payload = {
+        name: form.name.trim(),
+
+        categoryId:
+          form.categoryId,
+
+        brand:
+          form.brand.trim(),
+
+        description:
+          form.description.trim(),
+
+        price:
+          Number(form.price),
+
+        salePrice:
+          form.salePrice === ""
+            ? 0
+            : Number(form.salePrice),
+
+        stock:
+          form.stock === ""
+            ? 0
+            : Number(form.stock),
+
+        images:
+          cleanedImages,
+
+        flavors:
+          cleanedFlavors,
+
+        weight:
+          form.weight.trim(),
+
+        status:
+          form.status,
+      };
+
+      console.log(
+        "UPDATE PRODUCT PAYLOAD:",
+        payload
+      );
+
+      await onSubmit(payload);
+
+      onClose();
+    } catch (err) {
+      console.error(
+        "Update product error:",
+        err
+      );
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // ==========================================
+  // Don't Render
+  // ==========================================
+
+  if (!open || !product) {
+    return null;
+  }
 
   return (
     <AnimatePresence>
+      <motion.div
+        initial={{
+          opacity: 0,
+        }}
+        animate={{
+          opacity: 1,
+        }}
+        exit={{
+          opacity: 0,
+        }}
+        className="
+          fixed
+          inset-0
+          z-50
+          flex
+          items-center
+          justify-center
+          bg-black/60
+          p-4
+          backdrop-blur-sm
+        "
+      >
+        <motion.form
+          onSubmit={handleSubmit}
+          initial={{
+            opacity: 0,
+            scale: 0.9,
+            y: 30,
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            y: 0,
+          }}
+          exit={{
+            opacity: 0,
+            scale: 0.9,
+            y: 30,
+          }}
+          transition={{
+            duration: 0.25,
+          }}
+          className="
+            flex
+            max-h-[92vh]
+            w-full
+            max-w-4xl
+            flex-col
+            overflow-hidden
+            rounded-3xl
+            border
+            border-gray-200
+            bg-white
+            shadow-2xl
+            dark:border-[#1B2440]
+            dark:bg-[#0B1120]
+          "
+        >
+          {/* ====================================== */}
+          {/* HEADER */}
+          {/* ====================================== */}
 
-      {open && (
-
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
-
-          <motion.div
-             initial={{ opacity: 0, y: 30, scale: 0.96 }}
-  animate={{ opacity: 1, y: 0, scale: 1 }}
-  exit={{ opacity: 0, y: 30, scale: 0.96 }}
-  transition={{ duration: 0.25 }}
-  className="
-    w-full
-    max-w-4xl
-    bg-white
-    dark:bg-[#0B1120]
-    rounded-3xl
-    shadow-2xl
-    border
-    border-gray-200
-    dark:border-[#1B2440]
-    overflow-hidden
-  "
+          <div
+            className="
+              flex
+              shrink-0
+              items-center
+              justify-between
+              border-b
+              border-gray-200
+              px-8
+              py-6
+              dark:border-[#1B2440]
+            "
           >
-
-            <div className="flex items-center justify-between px-8 py-6 border-b border-gray-200 dark:border-[#1B2440]">
-  <div>
-    <h2 className="text-3xl font-bold">Edit Product</h2>
-    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-      Update supplement details
-    </p>
-  </div>
-
-  <button
-    type="button"
-    onClick={onClose}
-    className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-[#060816]"
-  >
-    <X size={24} />
-  </button>
-</div>
-        <div className="p-8">
-            <form
-              onSubmit={handleSubmit}
-              className="space-y-4"
-            >
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <div>
-    <label className="block text-sm font-medium mb-2">
-      Product Name
-    </label>
-    <input
-      className=" w-full
-    rounded-xl
-    border
-    border-gray-300
-    dark:border-[#1B2440]
-    bg-white
-    dark:bg-[#060816]
-    px-4
-    py-3
-    text-sm
-    text-gray-900
-    dark:text-white
-    placeholder:text-gray-400
-    outline-none
-    transition-all
-    duration-200
-    focus:border-orange-500
-    focus:ring-2
-    focus:ring-orange-500/20"
-      name="name"
-      value={form.name}
-      onChange={handleChange}
-      placeholder="Enter product name"
-    />
-  </div>
-
-  <div>
-    <label className="block text-sm font-medium mb-2">
-      Brand
-    </label>
-    <input
-      className=" w-full
-    rounded-xl
-    border
-    border-gray-300
-    dark:border-[#1B2440]
-    bg-white
-    dark:bg-[#060816]
-    px-4
-    py-3
-    text-sm
-    text-gray-900
-    dark:text-white
-    placeholder:text-gray-400
-    outline-none
-    transition-all
-    duration-200
-    focus:border-orange-500
-    focus:ring-2
-    focus:ring-orange-500/20"
-      name="brand"
-      value={form.brand}
-      onChange={handleChange}
-      placeholder="Enter brand"
-    />
-  </div>
-</div>
-
-              <select
-                className=" w-full
-    rounded-xl
-    border
-    border-gray-300
-    dark:border-[#1B2440]
-    bg-white
-    dark:bg-[#060816]
-    px-4
-    py-3
-    text-sm
-    text-gray-900
-    dark:text-white
-    placeholder:text-gray-400
-    outline-none
-    transition-all
-    duration-200
-    focus:border-orange-500
-    focus:ring-2
-    focus:ring-orange-500/20"
-                name="categoryId"
-                value={form.categoryId}
-                onChange={handleChange}
+            <div className="flex items-center gap-4">
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-gradient-to-r
+                  from-[#C11200]
+                  to-[#F96B00]
+                  text-white
+                "
               >
+                <Package size={24} />
+              </div>
 
-                <option value="">
-                  Select Category
-                </option>
+              <div>
+                <h2
+                  className="
+                    text-2xl
+                    font-bold
+                    text-gray-900
+                    dark:text-white
+                  "
+                >
+                  Edit Product
+                </h2>
 
-                {categories.map((cat) => (
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                    text-gray-500
+                    dark:text-slate-400
+                  "
+                >
+                  Update product information.
+                </p>
+              </div>
+            </div>
 
-                  <option
-                    key={cat._id}
-                    value={cat._id}
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="
+                rounded-xl
+                p-2
+                text-gray-500
+                transition
+                hover:bg-gray-100
+                hover:text-red-500
+                disabled:cursor-not-allowed
+                dark:hover:bg-[#060816]
+              "
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          {/* ====================================== */}
+          {/* BODY */}
+          {/* ====================================== */}
+
+          <div
+            className="
+              flex-1
+              space-y-6
+              overflow-y-auto
+              p-8
+            "
+          >
+            {/* ================================== */}
+            {/* BASIC INFORMATION */}
+            {/* ================================== */}
+
+            <div>
+              <h3
+                className="
+                  mb-4
+                  text-base
+                  font-bold
+                  text-gray-900
+                  dark:text-white
+                "
+              >
+                Basic Information
+              </h3>
+
+              <div
+                className="
+                  grid
+                  grid-cols-1
+                  gap-5
+                  md:grid-cols-2
+                "
+              >
+                {/* Name */}
+
+                <div>
+                  <label
+                    className="
+                      mb-2
+                      block
+                      text-sm
+                      font-semibold
+                      text-gray-700
+                      dark:text-gray-300
+                    "
                   >
-                    {cat.name}
+                    Product Name *
+                  </label>
+
+                  <input
+                    type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                    placeholder="Product Name"
+                    className="
+                      w-full
+                      rounded-xl
+                      border
+                      border-gray-300
+                      bg-white
+                      px-4
+                      py-3
+                      text-sm
+                      text-gray-900
+                      outline-none
+                      transition-all
+                      focus:border-orange-500
+                      focus:ring-2
+                      focus:ring-orange-500/20
+                      dark:border-[#1B2440]
+                      dark:bg-[#060816]
+                      dark:text-white
+                    "
+                  />
+
+                  {errors.name && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.name}
+                    </p>
+                  )}
+                </div>
+
+                {/* Brand */}
+
+                <div>
+                  <label
+                    className="
+                      mb-2
+                      block
+                      text-sm
+                      font-semibold
+                      text-gray-700
+                      dark:text-gray-300
+                    "
+                  >
+                    Brand *
+                  </label>
+
+                  <input
+                    type="text"
+                    name="brand"
+                    value={form.brand}
+                    onChange={handleChange}
+                    placeholder="Brand"
+                    className="
+                      w-full
+                      rounded-xl
+                      border
+                      border-gray-300
+                      bg-white
+                      px-4
+                      py-3
+                      text-sm
+                      text-gray-900
+                      outline-none
+                      transition-all
+                      focus:border-orange-500
+                      focus:ring-2
+                      focus:ring-orange-500/20
+                      dark:border-[#1B2440]
+                      dark:bg-[#060816]
+                      dark:text-white
+                    "
+                  />
+
+                  {errors.brand && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.brand}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ================================== */}
+            {/* CATEGORY + WEIGHT */}
+            {/* ================================== */}
+
+            <div
+              className="
+                grid
+                grid-cols-1
+                gap-5
+                md:grid-cols-2
+              "
+            >
+              {/* Category */}
+
+              <div>
+                <label
+                  className="
+                    mb-2
+                    flex
+                    items-center
+                    gap-2
+                    text-sm
+                    font-semibold
+                    text-gray-700
+                    dark:text-gray-300
+                  "
+                >
+                  <Tag size={16} />
+                  Category *
+                </label>
+
+                <select
+                  name="categoryId"
+                  value={form.categoryId}
+                  onChange={handleChange}
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-gray-300
+                    bg-white
+                    px-4
+                    py-3
+                    text-sm
+                    text-gray-900
+                    outline-none
+                    transition-all
+                    focus:border-orange-500
+                    focus:ring-2
+                    focus:ring-orange-500/20
+                    dark:border-[#1B2440]
+                    dark:bg-[#060816]
+                    dark:text-white
+                  "
+                >
+                  <option value="">
+                    Select Category
                   </option>
 
-                ))}
+                  {categories.map(
+                    (category) => (
+                      <option
+                        key={
+                          category._id
+                        }
+                        value={
+                          category._id
+                        }
+                      >
+                        {category.name}
+                      </option>
+                    )
+                  )}
+                </select>
 
-              </select>
+                {errors.categoryId && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {
+                      errors.categoryId
+                    }
+                  </p>
+                )}
+              </div>
+
+              {/* Weight */}
+
+              <div>
+                <label
+                  className="
+                    mb-2
+                    flex
+                    items-center
+                    gap-2
+                    text-sm
+                    font-semibold
+                    text-gray-700
+                    dark:text-gray-300
+                  "
+                >
+                  <Weight size={16} />
+                  Weight
+                </label>
+
+                <input
+                  type="text"
+                  name="weight"
+                  value={form.weight}
+                  onChange={handleChange}
+                  placeholder="1 kg"
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-gray-300
+                    bg-white
+                    px-4
+                    py-3
+                    text-sm
+                    text-gray-900
+                    outline-none
+                    transition-all
+                    focus:border-orange-500
+                    focus:ring-2
+                    focus:ring-orange-500/20
+                    dark:border-[#1B2440]
+                    dark:bg-[#060816]
+                    dark:text-white
+                  "
+                />
+              </div>
+            </div>
+
+            {/* ================================== */}
+            {/* DESCRIPTION */}
+            {/* ================================== */}
+
+            <div>
+              <label
+                className="
+                  mb-2
+                  block
+                  text-sm
+                  font-semibold
+                  text-gray-700
+                  dark:text-gray-300
+                "
+              >
+                Description
+              </label>
 
               <textarea
                 rows={4}
-                className=" w-full
-    rounded-xl
-    border
-    border-gray-300
-    dark:border-[#1B2440]
-    bg-white
-    dark:bg-[#060816]
-    px-4
-    py-3
-    text-sm
-    text-gray-900
-    dark:text-white
-    placeholder:text-gray-400
-    outline-none
-    transition-all
-    duration-200
-    focus:border-orange-500
-    focus:ring-2
-    focus:ring-orange-500/20"
                 name="description"
                 value={form.description}
                 onChange={handleChange}
                 placeholder="Description"
+                className="
+                  w-full
+                  resize-none
+                  rounded-xl
+                  border
+                  border-gray-300
+                  bg-white
+                  px-4
+                  py-3
+                  text-sm
+                  text-gray-900
+                  outline-none
+                  transition-all
+                  focus:border-orange-500
+                  focus:ring-2
+                  focus:ring-orange-500/20
+                  dark:border-[#1B2440]
+                  dark:bg-[#060816]
+                  dark:text-white
+                "
               />
+            </div>
 
-              <div className="grid grid-cols-3 gap-4">
+            {/* ================================== */}
+            {/* PRICE / SALE PRICE / STOCK */}
+            {/* ================================== */}
 
-                <input
-                  className=" w-full
-    rounded-xl
-    border
-    border-gray-300
-    dark:border-[#1B2440]
-    bg-white
-    dark:bg-[#060816]
-    px-4
-    py-3
-    text-sm
-    text-gray-900
-    dark:text-white
-    placeholder:text-gray-400
-    outline-none
-    transition-all
-    duration-200
-    focus:border-orange-500
-    focus:ring-2
-    focus:ring-orange-500/20"
-                  type="number"
-                  name="price"
-                  value={form.price}
-                  onChange={handleChange}
-                  placeholder="Price"
-                />
+            <div>
+              <h3
+                className="
+                  mb-4
+                  text-base
+                  font-bold
+                  text-gray-900
+                  dark:text-white
+                "
+              >
+                Pricing & Stock
+              </h3>
 
-                <input
-                  className=" w-full
-    rounded-xl
-    border
-    border-gray-300
-    dark:border-[#1B2440]
-    bg-white
-    dark:bg-[#060816]
-    px-4
-    py-3
-    text-sm
-    text-gray-900
-    dark:text-white
-    placeholder:text-gray-400
-    outline-none
-    transition-all
-    duration-200
-    focus:border-orange-500
-    focus:ring-2
-    focus:ring-orange-500/20"
-                  type="number"
-                  name="salePrice"
-                  value={form.salePrice}
-                  onChange={handleChange}
-                  placeholder="Sale Price"
-                />
+              <div
+                className="
+                  grid
+                  grid-cols-1
+                  gap-5
+                  md:grid-cols-3
+                "
+              >
+                {/* Price */}
 
-                <input
-                  className=" w-full
-    rounded-xl
-    border
-    border-gray-300
-    dark:border-[#1B2440]
-    bg-white
-    dark:bg-[#060816]
-    px-4
-    py-3
-    text-sm
-    text-gray-900
-    dark:text-white
-    placeholder:text-gray-400
-    outline-none
-    transition-all
-    duration-200
-    focus:border-orange-500
-    focus:ring-2
-    focus:ring-orange-500/20"
-                  type="number"
-                  name="stock"
-                  value={form.stock}
-                  onChange={handleChange}
-                  placeholder="Stock"
-                />
+                <div>
+                  <label
+                    className="
+                      mb-2
+                      flex
+                      items-center
+                      gap-2
+                      text-sm
+                      font-semibold
+                      text-gray-700
+                      dark:text-gray-300
+                    "
+                  >
+                    <DollarSign
+                      size={16}
+                    />
+                    Price *
+                  </label>
 
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    name="price"
+                    value={form.price}
+                    onChange={handleChange}
+                    placeholder="Price"
+                    className="
+                      w-full
+                      rounded-xl
+                      border
+                      border-gray-300
+                      bg-white
+                      px-4
+                      py-3
+                      text-sm
+                      text-gray-900
+                      outline-none
+                      transition-all
+                      focus:border-orange-500
+                      focus:ring-2
+                      focus:ring-orange-500/20
+                      dark:border-[#1B2440]
+                      dark:bg-[#060816]
+                      dark:text-white
+                    "
+                  />
+
+                  {errors.price && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.price}
+                    </p>
+                  )}
+                </div>
+
+                {/* Sale Price */}
+
+                <div>
+                  <label
+                    className="
+                      mb-2
+                      flex
+                      items-center
+                      gap-2
+                      text-sm
+                      font-semibold
+                      text-gray-700
+                      dark:text-gray-300
+                    "
+                  >
+                    <DollarSign
+                      size={16}
+                    />
+                    Sale Price
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    name="salePrice"
+                    value={
+                      form.salePrice
+                    }
+                    onChange={handleChange}
+                    placeholder="Sale Price"
+                    className="
+                      w-full
+                      rounded-xl
+                      border
+                      border-gray-300
+                      bg-white
+                      px-4
+                      py-3
+                      text-sm
+                      text-gray-900
+                      outline-none
+                      transition-all
+                      focus:border-orange-500
+                      focus:ring-2
+                      focus:ring-orange-500/20
+                      dark:border-[#1B2440]
+                      dark:bg-[#060816]
+                      dark:text-white
+                    "
+                  />
+
+                  {errors.salePrice && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {
+                        errors.salePrice
+                      }
+                    </p>
+                  )}
+                </div>
+
+                {/* Stock */}
+
+                <div>
+                  <label
+                    className="
+                      mb-2
+                      flex
+                      items-center
+                      gap-2
+                      text-sm
+                      font-semibold
+                      text-gray-700
+                      dark:text-gray-300
+                    "
+                  >
+                    <Boxes size={16} />
+                    Stock *
+                  </label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    name="stock"
+                    value={form.stock}
+                    onChange={handleChange}
+                    placeholder="Stock"
+                    className="
+                      w-full
+                      rounded-xl
+                      border
+                      border-gray-300
+                      bg-white
+                      px-4
+                      py-3
+                      text-sm
+                      text-gray-900
+                      outline-none
+                      transition-all
+                      focus:border-orange-500
+                      focus:ring-2
+                      focus:ring-orange-500/20
+                      dark:border-[#1B2440]
+                      dark:bg-[#060816]
+                      dark:text-white
+                    "
+                  />
+
+                  {errors.stock && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.stock}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ================================== */}
+            {/* IMAGES */}
+            {/* ================================== */}
+
+            <div>
+              <div
+                className="
+                  mb-4
+                  flex
+                  items-center
+                  justify-between
+                "
+              >
+                <label
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    text-sm
+                    font-semibold
+                    text-gray-700
+                    dark:text-gray-300
+                  "
+                >
+                  <Image size={17} />
+                  Product Images
+                </label>
+
+                <button
+                  type="button"
+                  onClick={addImage}
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    rounded-lg
+                    bg-orange-500
+                    px-3
+                    py-2
+                    text-xs
+                    font-semibold
+                    text-white
+                    transition
+                    hover:bg-orange-600
+                  "
+                >
+                  <Plus size={15} />
+                  Add Image
+                </button>
               </div>
 
-              <div className="flex justify-end gap-4 pt-6 border-t border-gray-200 dark:border-[#1B2440]">
-  <button
-    type="button"
-    onClick={onClose}
-    className="
-      px-6 py-3 rounded-xl
-      border border-gray-300 dark:border-[#1B2440]
-      hover:bg-gray-100 dark:hover:bg-[#060816]
-      transition
-    "
-  >
-    Cancel
-  </button>
+              <div className="space-y-3">
+                {form.images.map(
+                  (image, index) => (
+                    <div
+                      key={index}
+                      className="flex gap-3"
+                    >
+                      <div
+                        className="
+                          flex
+                          h-11
+                          w-11
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-xl
+                          bg-orange-500/10
+                          text-sm
+                          font-bold
+                          text-orange-500
+                        "
+                      >
+                        {index + 1}
+                      </div>
 
-  <button
-    type="submit"
-    className="
-      px-8 py-3 rounded-xl
-      text-white font-semibold
-      bg-gradient-to-r
-      from-[#F96B00]
-      to-orange-500
-      hover:shadow-lg
-      transition
-    "
-  >
-    Update Product
-  </button>
-</div>
+                      <input
+                        type="url"
+                        value={image}
+                        onChange={(e) =>
+                          handleImageChange(
+                            index,
+                            e.target.value
+                          )
+                        }
+                        placeholder="https://example.com/product-image.jpg"
+                        className="
+                          flex-1
+                          rounded-xl
+                          border
+                          border-gray-300
+                          bg-white
+                          px-4
+                          py-3
+                          text-sm
+                          text-gray-900
+                          outline-none
+                          transition-all
+                          focus:border-orange-500
+                          focus:ring-2
+                          focus:ring-orange-500/20
+                          dark:border-[#1B2440]
+                          dark:bg-[#060816]
+                          dark:text-white
+                        "
+                      />
 
-            </form>
-        </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeImage(
+                            index
+                          )
+                        }
+                        disabled={
+                          form.images
+                            .length ===
+                          1
+                        }
+                        className="
+                          rounded-xl
+                          bg-red-500
+                          px-4
+                          text-white
+                          transition
+                          hover:bg-red-600
+                          disabled:cursor-not-allowed
+                          disabled:opacity-30
+                        "
+                      >
+                        <Trash2
+                          size={18}
+                        />
+                      </button>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
 
-          </motion.div>
+            {/* ================================== */}
+            {/* FLAVORS */}
+            {/* ================================== */}
 
-        </div>
+            <div>
+              <div
+                className="
+                  mb-4
+                  flex
+                  items-center
+                  justify-between
+                "
+              >
+                <label
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    text-sm
+                    font-semibold
+                    text-gray-700
+                    dark:text-gray-300
+                  "
+                >
+                  <Palette size={17} />
+                  Flavors
+                </label>
 
-      )}
+                <button
+                  type="button"
+                  onClick={addFlavor}
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    rounded-lg
+                    border
+                    border-orange-500
+                    px-3
+                    py-2
+                    text-xs
+                    font-semibold
+                    text-orange-600
+                    transition
+                    hover:bg-orange-500
+                    hover:text-white
+                    dark:text-orange-400
+                  "
+                >
+                  <Plus size={15} />
+                  Add Flavor
+                </button>
+              </div>
 
+              <div className="space-y-3">
+                {form.flavors.map(
+                  (flavor, index) => (
+                    <div
+                      key={index}
+                      className="flex gap-3"
+                    >
+                      <input
+                        type="text"
+                        value={flavor}
+                        onChange={(e) =>
+                          handleFlavorChange(
+                            index,
+                            e.target.value
+                          )
+                        }
+                        placeholder="e.g. Chocolate"
+                        className="
+                          flex-1
+                          rounded-xl
+                          border
+                          border-gray-300
+                          bg-white
+                          px-4
+                          py-3
+                          text-sm
+                          text-gray-900
+                          outline-none
+                          transition-all
+                          focus:border-orange-500
+                          focus:ring-2
+                          focus:ring-orange-500/20
+                          dark:border-[#1B2440]
+                          dark:bg-[#060816]
+                          dark:text-white
+                        "
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeFlavor(
+                            index
+                          )
+                        }
+                        disabled={
+                          form.flavors
+                            .length ===
+                          1
+                        }
+                        className="
+                          rounded-xl
+                          bg-red-500
+                          px-4
+                          text-white
+                          transition
+                          hover:bg-red-600
+                          disabled:cursor-not-allowed
+                          disabled:opacity-30
+                        "
+                      >
+                        <Trash2
+                          size={18}
+                        />
+                      </button>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            {/* ================================== */}
+            {/* STATUS */}
+            {/* ================================== */}
+
+            <div
+              className="
+                flex
+                items-center
+                justify-between
+                rounded-2xl
+                border
+                border-gray-200
+                p-5
+                dark:border-[#1B2440]
+              "
+            >
+              <div>
+                <h3
+                  className="
+                    text-sm
+                    font-semibold
+                    text-gray-800
+                    dark:text-white
+                  "
+                >
+                  Product Status
+                </h3>
+
+                <p
+                  className="
+                    mt-1
+                    text-sm
+                    text-gray-500
+                    dark:text-slate-400
+                  "
+                >
+                  Enable or disable this
+                  product.
+                </p>
+              </div>
+
+              <label
+                className="
+                  relative
+                  inline-flex
+                  cursor-pointer
+                  items-center
+                "
+              >
+                <input
+                  type="checkbox"
+                  name="status"
+                  checked={form.status}
+                  onChange={handleChange}
+                  className="peer sr-only"
+                />
+
+                <div
+                  className="
+                    relative
+                    h-7
+                    w-12
+                    rounded-full
+                    bg-gray-300
+                    transition-all
+                    after:absolute
+                    after:left-1
+                    after:top-1
+                    after:h-5
+                    after:w-5
+                    after:rounded-full
+                    after:bg-white
+                    after:transition-all
+                    peer-checked:bg-orange-500
+                    peer-checked:after:translate-x-5
+                  "
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* ====================================== */}
+          {/* FOOTER */}
+          {/* ====================================== */}
+
+          <div
+            className="
+              flex
+              shrink-0
+              items-center
+              justify-end
+              gap-4
+              border-t
+              border-gray-200
+              bg-gray-50
+              px-8
+              py-5
+              dark:border-[#1B2440]
+              dark:bg-slate-900/40
+            "
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="
+                rounded-xl
+                border
+                border-gray-300
+                px-6
+                py-3
+                text-sm
+                font-semibold
+                text-gray-700
+                transition
+                hover:bg-gray-100
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+                dark:border-[#1B2440]
+                dark:text-gray-300
+                dark:hover:bg-[#060816]
+              "
+            >
+              Cancel
+            </button>
+
+            <motion.button
+              whileHover={{
+                scale: 1.02,
+              }}
+              whileTap={{
+                scale: 0.97,
+              }}
+              disabled={loading}
+              type="submit"
+              className="
+                flex
+                items-center
+                gap-2
+                rounded-xl
+                bg-gradient-to-r
+                from-[#C11200]
+                to-[#F96B00]
+                px-8
+                py-3
+                text-sm
+                font-semibold
+                text-white
+                shadow-lg
+                transition-all
+                disabled:cursor-not-allowed
+                disabled:opacity-70
+              "
+            >
+              <Save size={18} />
+
+              {loading
+                ? "Updating..."
+                : "Update Product"}
+            </motion.button>
+          </div>
+        </motion.form>
+      </motion.div>
     </AnimatePresence>
   );
 };

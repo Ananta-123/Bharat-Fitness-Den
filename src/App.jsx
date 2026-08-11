@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import DashboardPage from "./Pages/Dashboard/DashboardPage.jsx"
 import DashboardLayout from "./Components/Layout/DashboardLayout.jsx";
 import LoginPage from "./Pages/Login/LoginPage.jsx";
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
@@ -20,13 +21,7 @@ import OffersPage from "./Pages/Offers/OffersPage.jsx";
 import CartPage from "./Pages/Cart/CartPage.jsx";
 import ExercisePage from "./Pages/Exercise/ExercisePage.jsx"
 
-const Dashboard = () => {
-  return (
-    <div className="text-lightText dark:text-darkText">
-      Dashboard Page
-    </div>
-  );
-};
+
 
 
 
@@ -52,7 +47,7 @@ function App() {
           {/* CHILD ROUTES */}
           <Route
             index
-            element={<Dashboard />}
+            element={<DashboardPage />}
           />
 
           <Route

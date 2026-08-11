@@ -150,50 +150,7 @@ const UserRow = ({ user, onEdit, onDelete, }) => {
       </td>
 
       {/* WORKOUTS */}
-      <td className="px-6 py-2">
-        <div className="flex items-center gap-2">
-          {/* BAR */}
-          <div
-            className="
-              w-24 h-1.5 rounded-full
-              overflow-hidden
-              bg-gray-200
-              dark:bg-white/10
-            "
-          >
-            <div
-              className="
-                h-full rounded-full
-                bg-gradient-to-r
-                from-orange-500 to-amber-400
-                transition-all duration-500
-              "
-//               style={{
-//   width: `${Math.min(
-//     (user.workouts || 0) / 3,
-//     100
-//   )}%`,
-// }}
-style={{
-  width: "0%",
-}}
-              
-            />
-          </div>
-
-          <span
-            className="
-              text-sm font-medium
-              text-gray-800
-              dark:text-white
-              transition-colors duration-300
-            "
-          >
-            {/* {user.workouts} */}
-            0
-          </span>
-        </div>
-      </td>
+     
 
       {/* JOINED */}
       <td
@@ -222,7 +179,7 @@ style={{
       <td className="px-6 py-2">
         <div className="flex gap-2">
           {/* VIEW */}
-          <button
+          {/* <button
             className="
               p-1.5 rounded-full
               border
@@ -240,7 +197,7 @@ style={{
             "
           >
             <Eye size={16} />
-          </button>
+          </button> */}
 
           {/* EDIT */}
           <button

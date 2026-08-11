@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import SubscriptionHeader from "./components/SubscriptionHeader";
 import SubscriptionTabs from "./components/SubscriptionTabs";
 import PricingCards from "./components/PricingCards";
-import ComparisonTable from "./components/ComparisonTable";
+
 import PlanManagementTable from "./components/PlanManagementTable";
 import CreatePlanModal from "./components/CreatePlanModal";
 import EditPlanModal from "./components/EditPlanModal";
@@ -171,12 +171,6 @@ export default function SubscriptionPage() {
           />
         )}
 
-        {activeTab ===
-          "comparison" && (
-          <ComparisonTable
-            plans={plans}
-          />
-        )}
 
         {activeTab ===
           "management" && (

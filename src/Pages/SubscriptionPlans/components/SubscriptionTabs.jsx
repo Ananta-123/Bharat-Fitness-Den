@@ -5,10 +5,7 @@ const tabs = [
     id: "pricing",
     label: "Pricing Cards",
   },
-  {
-    id: "comparison",
-    label: "Comparison Table",
-  },
+  
   {
     id: "management",
     label: "Plan Management",
