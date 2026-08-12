@@ -1,21 +1,64 @@
-import axiosInstance from "../Api/axios.js";
+import axiosInstance from "./axios.js";
 
-export const getRevenueReport = async () => {
-    const res = await axiosInstance.get("/reports/revenue");
-    return res.data;
+// ======================================================
+// SUMMARY REPORTS
+// Backend prefix: /api/reports
+// ======================================================
+
+export const getRevenueSummary = async () => {
+  const { data } = await axiosInstance.get("/reports/revenue");
+  return data;
 };
 
-export const getMembershipReport = async () => {
-    const res = await axiosInstance.get("/reports/memberships");
-    return res.data;
+export const getMembershipSummary = async () => {
+  const { data } = await axiosInstance.get("/reports/memberships");
+  return data;
 };
 
-export const getUserReport = async () => {
-    const res = await axiosInstance.get("/reports/users");
-    return res.data;
+export const getUsersSummary = async () => {
+  const { data } = await axiosInstance.get("/reports/users");
+  return data;
 };
 
 export const getBranchReport = async () => {
-    const res = await axiosInstance.get("/reports/branches");
-    return res.data;
+  const { data } = await axiosInstance.get("/reports/branches");
+  return data;
+};
+
+
+// ======================================================
+// ADVANCED / ANALYTICS REPORTS
+// Backend prefix: /api/advanced-reports
+// ======================================================
+
+export const getRevenueAnalytics = async () => {
+  const { data } = await axiosInstance.get(
+    "/advanced-reports/revenue"
+  );
+
+  return data;
+};
+
+export const getMembershipAnalytics = async () => {
+  const { data } = await axiosInstance.get(
+    "/advanced-reports/memberships"
+  );
+
+  return data;
+};
+
+export const getWorkoutAnalytics = async () => {
+  const { data } = await axiosInstance.get(
+    "/advanced-reports/workouts"
+  );
+
+  return data;
+};
+
+export const getDietAnalytics = async () => {
+  const { data } = await axiosInstance.get(
+    "/advanced-reports/diets"
+  );
+
+  return data;
 };

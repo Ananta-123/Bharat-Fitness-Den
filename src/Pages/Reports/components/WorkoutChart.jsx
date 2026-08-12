@@ -3,26 +3,27 @@ import { useTheme } from "next-themes";
 
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  ComposedChart,
+  Bar,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
 } from "recharts";
 
 import {
-  IndianRupee,
-  TrendingUp,
+  Dumbbell,
+  Flame,
 } from "lucide-react";
 
-export default function RevenueChart({
-  totalRevenue = 0,
-  monthlyRevenue = [],
+export default function WorkoutChart({
+  data = [],
 }) {
   const { theme } = useTheme();
 
-  const chartData = monthlyRevenue.map((item) => {
+  const chartData = data.map((item) => {
     const date = new Date(`${item._id}-01`);
 
     return {
@@ -30,11 +31,29 @@ export default function RevenueChart({
         month: "short",
       }),
 
-      revenue: Number(item.revenue || 0),
+      workouts: Number(
+        item.workouts || 0
+      ),
+
+      calories: Number(
+        item.calories || 0
+      ),
     };
   });
 
   const isEmpty = chartData.length === 0;
+
+  const totalWorkouts = chartData.reduce(
+    (sum, item) =>
+      sum + item.workouts,
+    0
+  );
+
+  const totalCalories = chartData.reduce(
+    (sum, item) =>
+      sum + item.calories,
+    0
+  );
 
   return (
     <motion.div
@@ -53,8 +72,6 @@ export default function RevenueChart({
         rounded-2xl
         border
         p-6
-        transition-all
-        duration-300
 
         ${
           theme === "dark"
@@ -64,7 +81,12 @@ export default function RevenueChart({
       `}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="
+        flex
+        items-center
+        justify-between
+        mb-6
+      ">
         <div>
           <h2
             className={`
@@ -77,21 +99,15 @@ export default function RevenueChart({
               }
             `}
           >
-            Revenue Overview
+            Workout Performance
           </h2>
 
-          <p
-            className={`
-              mt-1
-              text-sm
-              ${
-                theme === "dark"
-                  ? "text-gray-400"
-                  : "text-gray-500"
-              }
-            `}
-          >
-            Monthly successful payment revenue
+          <p className="
+            mt-1
+            text-sm
+            text-gray-500
+          ">
+            Completed workouts and calories burned
           </p>
         </div>
 
@@ -104,39 +120,101 @@ export default function RevenueChart({
           items-center
           justify-center
         ">
-          <IndianRupee
-            className="text-orange-500"
+          <Dumbbell
             size={24}
+            className="text-orange-500"
           />
         </div>
       </div>
 
-      {/* Total */}
-      <div className="flex items-center gap-3 mb-6">
-        <h1
+      {/* Summary */}
+      <div className="
+        grid
+        grid-cols-2
+        gap-4
+        mb-6
+      ">
+        <div
           className={`
-            text-4xl
-            font-bold
+            rounded-xl
+            p-4
             ${
               theme === "dark"
-                ? "text-white"
-                : "text-gray-900"
+                ? "bg-[#161A2C]"
+                : "bg-gray-50"
             }
           `}
         >
-          ₹{Number(totalRevenue).toLocaleString("en-IN")}
-        </h1>
+          <div className="
+            flex
+            items-center
+            gap-2
+            text-sm
+            text-gray-500
+          ">
+            <Dumbbell size={16} />
+            Completed Workouts
+          </div>
 
-        <div className="
-          flex
-          items-center
-          gap-1
-          text-green-500
-          text-sm
-          font-medium
-        ">
-          <TrendingUp size={16} />
-          Total
+          <h3
+            className={`
+              mt-2
+              text-2xl
+              font-bold
+              ${
+                theme === "dark"
+                  ? "text-white"
+                  : "text-gray-900"
+              }
+            `}
+          >
+            {totalWorkouts.toLocaleString(
+              "en-IN"
+            )}
+          </h3>
+        </div>
+
+        <div
+          className={`
+            rounded-xl
+            p-4
+            ${
+              theme === "dark"
+                ? "bg-[#161A2C]"
+                : "bg-gray-50"
+            }
+          `}
+        >
+          <div className="
+            flex
+            items-center
+            gap-2
+            text-sm
+            text-gray-500
+          ">
+            <Flame
+              size={16}
+              className="text-orange-500"
+            />
+            Calories Burned
+          </div>
+
+          <h3
+            className={`
+              mt-2
+              text-2xl
+              font-bold
+              ${
+                theme === "dark"
+                  ? "text-white"
+                  : "text-gray-900"
+              }
+            `}
+          >
+            {totalCalories.toLocaleString(
+              "en-IN"
+            )}
+          </h3>
         </div>
       </div>
 
@@ -147,7 +225,7 @@ export default function RevenueChart({
             width="100%"
             height="100%"
           >
-            <AreaChart
+            <ComposedChart
               data={chartData}
               margin={{
                 top: 10,
@@ -156,28 +234,6 @@ export default function RevenueChart({
                 bottom: 0,
               }}
             >
-              <defs>
-                <linearGradient
-                  id="revenueGradient"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="0%"
-                    stopColor="#F96B00"
-                    stopOpacity={0.5}
-                  />
-
-                  <stop
-                    offset="100%"
-                    stopColor="#F96B00"
-                    stopOpacity={0}
-                  />
-                </linearGradient>
-              </defs>
-
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke={
@@ -197,11 +253,7 @@ export default function RevenueChart({
               />
 
               <YAxis
-                tickFormatter={(value) =>
-                  `₹${Number(value).toLocaleString(
-                    "en-IN"
-                  )}`
-                }
+                yAxisId="workouts"
                 stroke={
                   theme === "dark"
                     ? "#94A3B8"
@@ -209,13 +261,13 @@ export default function RevenueChart({
                 }
               />
 
+              <YAxis
+                yAxisId="calories"
+                orientation="right"
+                stroke="#F96B00"
+              />
+
               <Tooltip
-                formatter={(value) => [
-                  `₹${Number(value).toLocaleString(
-                    "en-IN"
-                  )}`,
-                  "Revenue",
-                ]}
                 contentStyle={{
                   background:
                     theme === "dark"
@@ -231,18 +283,29 @@ export default function RevenueChart({
                 }}
               />
 
-              <Area
+              <Legend />
+
+              <Bar
+                yAxisId="workouts"
+                dataKey="workouts"
+                name="Workouts"
+                fill="#8B0000"
+                radius={[6, 6, 0, 0]}
+              />
+
+              <Line
+                yAxisId="calories"
                 type="monotone"
-                dataKey="revenue"
+                dataKey="calories"
+                name="Calories"
                 stroke="#F96B00"
                 strokeWidth={3}
-                fill="url(#revenueGradient)"
-                activeDot={{
-                  r: 6,
+                dot={{
+                  r: 4,
                   fill: "#F96B00",
                 }}
               />
-            </AreaChart>
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       ) : (
@@ -265,12 +328,14 @@ export default function RevenueChart({
         >
           <div>
             <p className="font-medium">
-              No revenue analytics available
+              No workout analytics available
             </p>
 
-            <p className="text-sm mt-1">
-              Monthly revenue will appear here when
-              successful payments exist.
+            <p className="
+              text-sm
+              mt-1
+            ">
+              Completed workout sessions will appear here.
             </p>
           </div>
         </div>

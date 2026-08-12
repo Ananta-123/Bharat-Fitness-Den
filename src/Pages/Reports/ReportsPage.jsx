@@ -6,24 +6,31 @@ import ReportHeader from "./components/ReportHeader";
 import ReportStats from "./components/ReportStats";
 import RevenueChart from "./components/RevenueChart";
 import MembershipCard from "./components/MembershipCard";
+import WorkoutChart from "./components/WorkoutChart";
+import DietProgress from "./components/DietProgress";
 import BranchChart from "./components/BranchChart";
-import UserGrowthCard from "./components/UserGrowthCard";
 import BranchTable from "./components/BranchTable";
 import LoadingSkeleton from "./components/LoadingSkeleton";
 
 import {
-  getRevenueReport,
-  getMembershipReport,
-  getUserReport,
+  getRevenueSummary,
+  getMembershipSummary,
+  getUsersSummary,
   getBranchReport,
+
+  getRevenueAnalytics,
+  getMembershipAnalytics,
+  getWorkoutAnalytics,
+  getDietAnalytics,
 } from "../../Api/reportApi";
 
 export default function ReportsPage() {
   const { theme } = useTheme();
 
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [reportData, setReportData] = useState({
+  const [summaryData, setSummaryData] = useState({
     totalRevenue: 0,
     totalUsers: 0,
     activeMembers: 0,
@@ -31,31 +38,77 @@ export default function ReportsPage() {
     branches: [],
   });
 
+  const [analyticsData, setAnalyticsData] = useState({
+    revenue: [],
+    memberships: [],
+    workouts: [],
+    diets: [],
+  });
+
   const fetchReports = async () => {
     try {
       setLoading(true);
+      setError("");
 
       const [
-        revenueRes,
-        membershipRes,
-        userRes,
+        revenueSummaryRes,
+        membershipSummaryRes,
+        usersSummaryRes,
         branchRes,
+
+        revenueAnalyticsRes,
+        membershipAnalyticsRes,
+        workoutAnalyticsRes,
+        dietAnalyticsRes,
       ] = await Promise.all([
-        getRevenueReport(),
-        getMembershipReport(),
-        getUserReport(),
+        getRevenueSummary(),
+        getMembershipSummary(),
+        getUsersSummary(),
         getBranchReport(),
+
+        getRevenueAnalytics(),
+        getMembershipAnalytics(),
+        getWorkoutAnalytics(),
+        getDietAnalytics(),
       ]);
 
-      setReportData({
-        totalRevenue: revenueRes.totalRevenue || 0,
-        totalUsers: userRes.totalUsers || 0,
-        activeMembers: membershipRes.active || 0,
-        expiredMembers: membershipRes.expired || 0,
-        branches: branchRes.report || [],
+      setSummaryData({
+        totalRevenue:
+          revenueSummaryRes?.totalRevenue || 0,
+
+        totalUsers:
+          usersSummaryRes?.totalUsers || 0,
+
+        activeMembers:
+          membershipSummaryRes?.active || 0,
+
+        expiredMembers:
+          membershipSummaryRes?.expired || 0,
+
+        branches:
+          branchRes?.report || [],
+      });
+
+      setAnalyticsData({
+        revenue:
+          revenueAnalyticsRes?.report || [],
+
+        memberships:
+          membershipAnalyticsRes?.report || [],
+
+        workouts:
+          workoutAnalyticsRes?.report || [],
+
+        diets:
+          dietAnalyticsRes?.report || [],
       });
     } catch (err) {
-      console.error("Failed to load reports", err);
+      console.error("Failed to load reports:", err);
+
+      setError(
+        err?.response?.data?.message ||
+        "Failed to load reports. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -71,93 +124,128 @@ export default function ReportsPage() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300
-      ${
-        theme === "dark"
-          ? "bg-transparent text-white"
-          : "bg-transparent text-gray-900"
-      }`}
+      className={`
+        min-h-screen
+        transition-colors
+        duration-300
+        ${
+          theme === "dark"
+            ? "text-white"
+            : "text-gray-900"
+        }
+      `}
     >
       <div className="space-y-6">
 
-        {/* Header */}
+        {/* ERROR */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="
+              rounded-xl
+              border
+              border-red-500/30
+              bg-red-500/10
+              px-4
+              py-3
+              text-sm
+              text-red-400
+            "
+          >
+            {error}
+          </motion.div>
+        )}
+
+        {/* HEADER */}
         <ReportHeader />
 
-        {/* Top Stats */}
+        {/* SUMMARY CARDS */}
         <ReportStats
-          revenue={reportData.totalRevenue}
-          totalUsers={reportData.totalUsers}
-          activeMembers={reportData.activeMembers}
-          expiredMembers={reportData.expiredMembers}
-          totalBranches={reportData.branches.length}
+          revenue={summaryData.totalRevenue}
+          totalUsers={summaryData.totalUsers}
+          activeMembers={summaryData.activeMembers}
+          expiredMembers={summaryData.expiredMembers}
+          totalBranches={summaryData.branches.length}
         />
 
-        {/* Charts */}
+        {/* REVENUE + MEMBERSHIP */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: .4 }}
-            whileHover={{ y: -3 }}
+            transition={{ duration: 0.4 }}
             className="xl:col-span-2"
           >
             <RevenueChart
-              totalRevenue={reportData.totalRevenue}
+              totalRevenue={summaryData.totalRevenue}
+              monthlyRevenue={analyticsData.revenue}
             />
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: .45 }}
-            whileHover={{ y: -3 }}
+            transition={{ duration: 0.45 }}
           >
             <MembershipCard
-              active={reportData.activeMembers}
-              expired={reportData.expiredMembers}
+              active={summaryData.activeMembers}
+              expired={summaryData.expiredMembers}
+              analytics={analyticsData.memberships}
             />
           </motion.div>
 
         </div>
 
-        {/* Second Row */}
-
+        {/* WORKOUT + DIET */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: .45 }}
-            whileHover={{ y: -3 }}
+            transition={{ duration: 0.45 }}
           >
-            <BranchChart
-              branches={reportData.branches}
+            <WorkoutChart
+              data={analyticsData.workouts}
             />
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: .5 }}
-            whileHover={{ y: -3 }}
+            transition={{ duration: 0.5 }}
           >
-            <UserGrowthCard
-              totalUsers={reportData.totalUsers}
+            <DietProgress
+              data={analyticsData.diets}
             />
           </motion.div>
 
         </div>
 
-        {/* Table */}
+        {/* BRANCH */}
+<div className="grid grid-cols-1 gap-6">
 
+  <motion.div
+    initial={{ opacity: 0, y: 15 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.45 }}
+  >
+    <BranchChart
+      branches={summaryData.branches}
+    />
+  </motion.div>
+
+</div>
+
+        {/* BRANCH TABLE */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: .55 }}
+          transition={{ duration: 0.55 }}
         >
           <BranchTable
-            branches={reportData.branches}
+            branches={summaryData.branches}
           />
         </motion.div>
 
