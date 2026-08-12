@@ -241,25 +241,49 @@ const Sidebar = ({
         </div>
 
         {/* MENU */}
-        <div
-          className="
-            flex-1
-            overflow-y-auto
-
-            sidebar-scroll
-
-            px-3 py-5
-            space-y-2
-          "
-        >
-          {sidebarData.map((item, index) => (
-            <SidebarItem
-              key={index}
-              item={item}
-              collapsed={collapsed}
-            />
-          ))}
+<div
+  className="
+    flex-1
+    overflow-y-auto
+    sidebar-scroll
+    px-3 py-5
+  "
+>
+  {sidebarData.map((section, sectionIndex) => (
+    <div
+      key={section.category || sectionIndex}
+      className="mb-5"
+    >
+      {/* CATEGORY TITLE */}
+      {!collapsed && (
+        <div className="px-4 mb-2">
+          <p
+            className="
+              text-[10px]
+              font-semibold
+              tracking-[0.18em]
+              text-gray-500
+              uppercase
+            "
+          >
+            {section.category}
+          </p>
         </div>
+      )}
+
+      {/* CATEGORY ITEMS */}
+      <div className="space-y-1">
+        {section.items.map((item, itemIndex) => (
+          <SidebarItem
+            key={item.path || itemIndex}
+            item={item}
+            collapsed={collapsed}
+          />
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
 
         {/* BOTTOM CARD */}
         <div className="p-4">

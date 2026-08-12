@@ -1,9 +1,9 @@
 import {
   Image,
-  ChartNoAxesCombined ,
+  ChartNoAxesCombined,
   CalendarClock,
   ClipboardList,
-  Package ,
+  Package,
   LayoutDashboard,
   Users,
   Dumbbell,
@@ -22,98 +22,136 @@ import {
 
 export const sidebarData = [
   {
-    title: "Dashboard",
-    path: "/",
-    icon: LayoutDashboard,
+    category: "OVERVIEW",
+    items: [
+      {
+        title: "Dashboard",
+        path: "/",
+        icon: LayoutDashboard,
+      },
+    ],
   },
+
   {
-    title: "Users",
-    path: "/users",
-    icon: Users,
+    category: "TRAINING",
+    items: [
+      {
+        title: "Workouts",
+        path: "/workouts",
+        icon: Activity,
+      },
+      {
+        title: "Exercise",
+        path: "/exercise",
+        icon: Dumbbell,
+      },
+      // {
+      //   title: "Workouts Sessions",
+      //   path: "/workouts-sessions",
+      //   icon: CalendarClock,
+      // },
+      // {
+      //   title: "User Workouts",
+      //   path: "/user-workouts",
+      //   icon: ClipboardList,
+      // },
+    ],
   },
+
   {
-    title: "Trainers",
-    path: "/trainers",
-    icon: Dumbbell,
+    category: "NUTRITION",
+    items: [
+      {
+        title: "Diet Plans",
+        path: "/diet-plans",
+        icon: Apple,
+      },
+      {
+        title: "Supplements",
+        path: "/supplements",
+        icon: Pill,
+      },
+      {
+        title: "Goal Groups",
+        path: "/goalgroups",
+        icon: Target,
+      },
+    ],
   },
+
   {
-    title: "Branches",
-    path: "/branches",
-    icon: Building2,
+    category: "PEOPLE",
+    items: [
+      {
+        title: "Users",
+        path: "/users",
+        icon: Users,
+      },
+      {
+        title: "Trainers",
+        path: "/trainers",
+        icon: Dumbbell,
+      },
+      {
+        title: "Branches",
+        path: "/branches",
+        icon: Building2,
+      },
+      {
+        title: "Subscription Plans",
+        path: "/subscriptions",
+        icon: CreditCard,
+      },
+    ],
   },
+
   {
-    title: "Subscriptions",
-    path: "/subscriptions",
-    icon: CreditCard,
+    category: "COMMERCE",
+    items: [
+      {
+        title: "Products",
+        path: "/supplements",
+        icon: Package,
+      },
+      {
+        title: "Order",
+        path: "/carts",
+        icon: ShoppingCart,
+      },
+      {
+        title: "Offers & Coupons",
+        path: "/offers",
+        icon: BadgePercent,
+      },
+      
+    ],
   },
+
   {
-    title: "Goal Groups",
-    path: "/goalgroups",
-    icon: Target,
+    category: "CONTENT",
+    items: [
+      {
+        title: "Banners",
+        path: "/banners",
+        icon: Image,
+      },
+      // {
+      //   title: "Notifications",
+      //   path: "/notifications",
+      //   icon: Bell,
+      // },
+    ],
   },
-  //  {
-  //   title: "Workouts Sessions",
-  //   path: "/workouts-sessions",
-  //   icon: CalendarClock,
-  // },
+
   {
-    title: "Workouts",
-    path: "/workouts",
-    icon: Activity,
+    category: "INSIGHTS",
+    items: [
+      {
+        title: "Reports",
+        path: "/reports",
+        icon: BarChart3,
+      },
+      
+    ],
   },
-  {
-    title: "Exercise",
-    path: "/exercise",
-    icon: Dumbbell,
-  },
-  // {
-  //   title: "User Workouts",
-  //   path: "/user-workouts",
-  //   icon: ClipboardList,
-  // },
-  {
-    title: "Diet Plans",
-    path: "/diet-plans",
-    icon: Apple,
-  },
-  {
-    title: "Supplements",
-    path: "/supplements",
-    icon: Pill,
-  },
-  // {
-  //   title: "Orders",
-  //   path: "/orders",
-  //   icon: Package ,
-  // },
-  {
-    title: "Offers",
-    path: "/offers",
-    icon: BadgePercent,
-  },
-  // {
-  //   title: "Notifications",
-  //   path: "/notifications",
-  //   icon: Bell,
-  // },
-  {
-    title: "Banners",
-    path: "/banners",
-    icon: Image,
-  },
-  {
-    title: "Reports",
-    path: "/reports",
-    icon: BarChart3,
-  },
-  {
-    title: "Order",
-    path: "/carts",
-    icon: ShoppingCart,
-  },
-  //  {
-  //   title: "Analytics",
-  //   path: "/analytics",
-  //   icon: ChartNoAxesCombined ,
-  // },
 ];
