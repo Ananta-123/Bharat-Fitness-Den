@@ -1,29 +1,26 @@
 import { motion } from "framer-motion";
-import { UserPlus } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+  UserPlus,
+} from "lucide-react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import { getRecentMembers } from "../../../Api/dashboardApi";
+import {
+  getRecentMembers,
+} from "../../../Api/dashboardApi";
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "Active":
-      return "bg-green-100 text-green-600 dark:bg-green-500/10 dark:text-green-400";
-
-    case "Pending":
-      return "bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400";
-
-    case "Inactive":
-      return "bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400";
-
-    default:
-      return "bg-gray-100 text-gray-600 dark:bg-zinc-700 dark:text-gray-300";
-  }
-};
-
-const formatJoinedDate = (date) => {
+const formatDate = (date) => {
   if (!date) return "N/A";
 
-  return new Date(date).toLocaleDateString(
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return "N/A";
+  }
+
+  return parsed.toLocaleDateString(
     "en-IN",
     {
       day: "2-digit",
@@ -33,59 +30,55 @@ const formatJoinedDate = (date) => {
   );
 };
 
-const getMembershipName = (subscription) => {
-  if (!subscription) {
-    return "No Plan";
-  }
+const getInitials = (name) => {
+  if (!name) return "U";
 
-  return (
-    subscription.name ||
-    subscription.planName ||
-    subscription.title ||
-    "Subscription"
-  );
-};
-
-const getMemberStatus = (isActive) => {
-  return isActive
-    ? "Active"
-    : "Inactive";
+  return name
+    .split(" ")
+    .map((item) => item[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 };
 
 const RecentMembers = () => {
-  const [members, setMembers] = useState([]);
+  const [members, setMembers] =
+    useState([]);
+
   const [loading, setLoading] =
     useState(true);
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        setLoading(true);
+    const fetchMembers =
+      async () => {
+        try {
+          setLoading(true);
 
-        const response =
-          await getRecentMembers(5);
+          const response =
+            await getRecentMembers(5);
 
-        console.log(
-          "Recent Members API:",
-          response
-        );
+          console.log(
+            "Recent Members:",
+            response
+          );
 
-        setMembers(
-          response?.data || []
-        );
+          setMembers(
+            response?.data ||
+              response?.users ||
+              response?.members ||
+              []
+          );
+        } catch (error) {
+          console.error(
+            "Recent Members Error:",
+            error
+          );
 
-      } catch (error) {
-        console.error(
-          "Failed to fetch recent members:",
-          error
-        );
-
-        setMembers([]);
-
-      } finally {
-        setLoading(false);
-      }
-    };
+          setMembers([]);
+        } finally {
+          setLoading(false);
+        }
+      };
 
     fetchMembers();
   }, []);
@@ -104,34 +97,30 @@ const RecentMembers = () => {
           dark:bg-[#0F1324]
         "
       >
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <div className="mb-2 h-6 w-40 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
+        <div className="mb-8">
+          <div className="h-6 w-40 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
 
-            <div className="h-4 w-56 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
-          </div>
-
-          <div className="h-11 w-11 animate-pulse rounded-xl bg-gray-300 dark:bg-zinc-700" />
+          <div className="mt-2 h-4 w-52 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
         </div>
 
-        {[1, 2, 3, 4, 5].map((item) => (
-          <div
-            key={item}
-            className="mb-5 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 animate-pulse rounded-full bg-gray-300 dark:bg-zinc-700" />
+        <div className="space-y-5">
+          {[1, 2, 3, 4, 5].map(
+            (item) => (
+              <div
+                key={item}
+                className="flex items-center gap-4"
+              >
+                <div className="h-12 w-12 animate-pulse rounded-full bg-gray-300 dark:bg-zinc-700" />
 
-              <div>
-                <div className="mb-2 h-4 w-32 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
+                <div className="flex-1">
+                  <div className="h-4 w-32 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
 
-                <div className="h-3 w-24 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
+                  <div className="mt-2 h-3 w-44 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
+                </div>
               </div>
-            </div>
-
-            <div className="h-6 w-20 animate-pulse rounded bg-gray-300 dark:bg-zinc-700" />
-          </div>
-        ))}
+            )
+          )}
+        </div>
       </div>
     );
   }
@@ -145,9 +134,6 @@ const RecentMembers = () => {
       animate={{
         opacity: 1,
         y: 0,
-      }}
-      transition={{
-        duration: 0.4,
       }}
       whileHover={{
         y: -4,
@@ -163,8 +149,6 @@ const RecentMembers = () => {
         dark:bg-[#0F1324]
       "
     >
-      {/* HEADER */}
-
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -172,7 +156,7 @@ const RecentMembers = () => {
           </h2>
 
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Newly joined gym members
+            Newly registered members
           </p>
         </div>
 
@@ -184,17 +168,15 @@ const RecentMembers = () => {
         </div>
       </div>
 
-      {/* EMPTY STATE */}
-
       {members.length === 0 ? (
-        <div className="py-16 text-center">
+        <div className="py-14 text-center">
           <UserPlus
-            size={55}
-            className="mx-auto mb-4 text-gray-400"
+            size={45}
+            className="mx-auto text-gray-400"
           />
 
-          <p className="text-lg font-semibold text-gray-700 dark:text-white">
-            No Members Found
+          <p className="mt-4 font-semibold text-gray-700 dark:text-white">
+            No Recent Members
           </p>
 
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
@@ -202,159 +184,80 @@ const RecentMembers = () => {
           </p>
         </div>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-4">
           {members.map(
-            (member, index) => {
-              const status =
-                getMemberStatus(
-                  member.isActive
-                );
-
-              const membership =
-                getMembershipName(
-                  member.subscriptionPlanId
-                );
-
-              return (
-                <motion.div
-                  key={
-                    member._id ||
-                    index
-                  }
-                  initial={{
-                    opacity: 0,
-                    x: -15,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    x: 0,
-                  }}
-                  transition={{
-                    delay:
-                      index * 0.08,
-                  }}
-                  whileHover={{
-                    x: 6,
-                  }}
+            (member, index) => (
+              <motion.div
+                key={
+                  member?._id ||
+                  index
+                }
+                initial={{
+                  opacity: 0,
+                  x: -15,
+                }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                transition={{
+                  delay:
+                    index * 0.07,
+                }}
+                className="
+                  flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  p-2
+                  transition
+                  hover:bg-gray-50
+                  dark:hover:bg-[#151A2F]
+                "
+              >
+                <div
                   className="
                     flex
+                    h-11
+                    w-11
+                    shrink-0
                     items-center
-                    justify-between
-                    rounded-xl
-                    border
-                    border-transparent
-                    p-3
-                    transition-all
-                    hover:border-[#F96B00]/30
-                    hover:bg-gray-50
-                    dark:hover:bg-[#151A2F]
+                    justify-center
+                    rounded-full
+                    bg-gradient-to-br
+                    from-[#8B0000]
+                    to-[#F96B00]
+                    text-sm
+                    font-bold
+                    text-white
                   "
                 >
-                  {/* LEFT */}
+                  {getInitials(
+                    member?.fullName
+                  )}
+                </div>
 
-                  <div className="flex items-center gap-4">
-                    {/* Avatar */}
+                <div className="min-w-0">
+                  <h4 className="truncate font-semibold text-gray-900 dark:text-white">
+                    {member?.fullName ||
+                      "Unknown User"}
+                  </h4>
 
-                    <div
-                      className="
-                        flex
-                        h-12
-                        w-12
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-full
-                        bg-gradient-to-br
-                        from-[#8B0000]
-                        to-[#F96B00]
-                        font-semibold
-                        text-white
-                      "
-                    >
-                      {(member.fullName ||
-                        "User")
-                        .split(" ")
-                        .map(
-                          (name) =>
-                            name[0]
-                        )
-                        .join("")
-                        .slice(0, 2)
-                        .toUpperCase()}
-                    </div>
+                  <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                    {member?.email ||
+                      member?.mobile ||
+                      "No contact"}
+                  </p>
 
-                    {/* MEMBER INFO */}
-
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white">
-                        {member.fullName ||
-                          "Unknown User"}
-                      </h4>
-
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {member.email ||
-                          member.mobile ||
-                          "No contact"}
-                      </p>
-
-                      <div className="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                        {/* Membership */}
-
-                        <span>
-                          {membership}
-                        </span>
-
-                        <span>
-                          •
-                        </span>
-
-                        {/* Joined */}
-
-                        <span>
-                          {formatJoinedDate(
-                            member.createdAt
-                          )}
-                        </span>
-
-                        {member.branchId
-                          ?.branchName && (
-                          <>
-                            <span>
-                              •
-                            </span>
-
-                            <span>
-                              {
-                                member
-                                  .branchId
-                                  .branchName
-                              }
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* STATUS */}
-
-                  <span
-                    className={`
-                      rounded-full
-                      px-3
-                      py-1
-                      text-xs
-                      font-semibold
-                      ${getStatusColor(
-                        status
-                      )}
-                    `}
-                  >
-                    {status}
-                  </span>
-                </motion.div>
-              );
-            }
+                  <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                    Joined{" "}
+                    {formatDate(
+                      member?.createdAt
+                    )}
+                  </p>
+                </div>
+              </motion.div>
+            )
           )}
         </div>
       )}

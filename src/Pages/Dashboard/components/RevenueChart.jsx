@@ -1,87 +1,49 @@
 import { motion } from "framer-motion";
+
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
 } from "recharts";
 
-const dummyRevenue = [
-  { month: "Jan", revenue: 145000 },
-  { month: "Feb", revenue: 158000 },
-  { month: "Mar", revenue: 172000 },
-  { month: "Apr", revenue: 165000 },
-  { month: "May", revenue: 191000 },
-  { month: "Jun", revenue: 220000 },
-  { month: "Jul", revenue: 208000 },
-];
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-
-  return (
-    <div
-      className="
-        rounded-xl
-        border
-        border-zinc-700
-        bg-[#111827]
-        p-4
-        shadow-xl
-      "
-    >
-      <p className="mb-2 text-sm font-semibold text-white">
-        {label}
-      </p>
-
-      <p className="text-sm font-semibold text-[#F96B00]">
-        Revenue : ₹{payload[0].value.toLocaleString("en-IN")}
-      </p>
-    </div>
-  );
-};
-
 const RevenueChart = ({
-  data = dummyRevenue,
-  loading = false,
+  data = [],
 }) => {
-  if (loading) {
-    return (
-      <div
-        className="
-          h-[420px]
-          animate-pulse
-          rounded-2xl
-          border
-          border-gray-200
-          bg-white
-          p-6
-          dark:border-zinc-800
-          dark:bg-[#0F1324]
-        "
-      >
-        <div className="mb-6 h-6 w-48 rounded bg-gray-300 dark:bg-zinc-700" />
+  const chartData = data.map(
+    (item) => ({
+      branch:
+        item?.branch?.branchName ||
+        item?.branch?.name ||
+        "Unknown",
 
-        <div className="h-[300px] rounded bg-gray-300 dark:bg-zinc-700" />
-      </div>
+      revenue:
+        Number(item?.totalRevenue) || 0,
+
+      payments:
+        Number(item?.totalPayments) || 0,
+    })
+  );
+
+  const totalRevenue =
+    chartData.reduce(
+      (sum, item) =>
+        sum + item.revenue,
+      0
     );
-  }
 
   return (
     <motion.div
       initial={{
         opacity: 0,
-        y: 25,
+        y: 20,
       }}
       animate={{
         opacity: 1,
         y: 0,
-      }}
-      transition={{
-        duration: 0.4,
       }}
       whileHover={{
         y: -4,
@@ -97,16 +59,14 @@ const RevenueChart = ({
         dark:bg-[#0F1324]
       "
     >
-      {/* Header */}
-
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Revenue Overview
+            Revenue By Branch
           </h2>
 
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Monthly revenue performance
+            Successful payment revenue
           </p>
         </div>
 
@@ -123,81 +83,117 @@ const RevenueChart = ({
             dark:text-orange-400
           "
         >
-          Jan - Jul 2026
+          ₹{totalRevenue.toLocaleString("en-IN")}
         </span>
       </div>
 
-      {/* Chart */}
-
-      <div className="h-[320px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
-            <defs>
-              <linearGradient
-                id="colorRevenue"
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
+      {chartData.length === 0 ? (
+        <div className="flex h-[320px] items-center justify-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            No revenue data available.
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="h-[320px] w-full">
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+            >
+              <BarChart
+                data={chartData}
+                barCategoryGap={25}
               >
-                <stop
-                  offset="0%"
-                  stopColor="#C11200"
-                  stopOpacity={0.45}
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#374151"
+                  opacity={0.2}
                 />
 
-                <stop
-                  offset="100%"
-                  stopColor="#C11200"
-                  stopOpacity={0}
+                <XAxis
+                  dataKey="branch"
+                  tickLine={false}
+                  axisLine={false}
+                  stroke="#94A3B8"
                 />
-              </linearGradient>
-            </defs>
 
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#2d3748"
-              opacity={0.25}
-            />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  stroke="#94A3B8"
+                  tickFormatter={(value) =>
+                    `₹${value / 1000}k`
+                  }
+                />
 
-            <XAxis
-              dataKey="month"
-              stroke="#94a3b8"
-              tickLine={false}
-              axisLine={false}
-            />
+                <Tooltip
+                  cursor={{
+                    fill: "rgba(249,107,0,.08)",
+                  }}
+                  formatter={(
+                    value,
+                    name
+                  ) => {
+                    if (
+                      name ===
+                      "revenue"
+                    ) {
+                      return [
+                        `₹${Number(
+                          value
+                        ).toLocaleString(
+                          "en-IN"
+                        )}`,
+                        "Revenue",
+                      ];
+                    }
 
-            <YAxis
-              stroke="#94a3b8"
-              tickFormatter={(value) => `₹${value / 1000}k`}
-              tickLine={false}
-              axisLine={false}
-            />
+                    return [
+                      value,
+                      "Payments",
+                    ];
+                  }}
+                  contentStyle={{
+                    backgroundColor:
+                      "#111827",
+                    border:
+                      "1px solid #374151",
+                    borderRadius:
+                      "12px",
+                  }}
+                />
 
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{
-                stroke: "#F96B00",
-                strokeWidth: 1,
-              }}
-            />
+                <Bar
+                  dataKey="revenue"
+                  fill="#F96B00"
+                  radius={[
+                    10,
+                    10,
+                    0,
+                    0,
+                  ]}
+                  maxBarSize={48}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
 
-            <Area
-              type="monotone"
-              dataKey="revenue"
-              stroke="#F96B00"
-              strokeWidth={3}
-              fill="url(#colorRevenue)"
-              activeDot={{
-                r: 6,
-                fill: "#F96B00",
-                stroke: "#fff",
-                strokeWidth: 2,
-              }}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+          <div className="mt-6 border-t border-gray-200 pt-5 dark:border-zinc-700">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Total successful revenue
+              </span>
+
+              <span className="font-bold text-gray-900 dark:text-white">
+                ₹
+                {totalRevenue.toLocaleString(
+                  "en-IN"
+                )}
+              </span>
+            </div>
+          </div>
+        </>
+      )}
     </motion.div>
   );
 };

@@ -22,7 +22,9 @@ import {
   getMembershipAnalytics,
   getWorkoutAnalytics,
   getDietAnalytics,
-} from "../../Api/reportApi";
+} from "../../Api/reportApi.js";
+
+import {getUserStatusCount} from "../../Api/dashboardApi.js"
 
 export default function ReportsPage() {
   const { theme } = useTheme();
@@ -34,7 +36,7 @@ export default function ReportsPage() {
     totalRevenue: 0,
     totalUsers: 0,
     activeMembers: 0,
-    expiredMembers: 0,
+    inactiveMembers: 0,
     branches: [],
   });
 
@@ -55,6 +57,7 @@ export default function ReportsPage() {
         membershipSummaryRes,
         usersSummaryRes,
         branchRes,
+        userStatusRes,
 
         revenueAnalyticsRes,
         membershipAnalyticsRes,
@@ -65,6 +68,7 @@ export default function ReportsPage() {
         getMembershipSummary(),
         getUsersSummary(),
         getBranchReport(),
+        getUserStatusCount(),
 
         getRevenueAnalytics(),
         getMembershipAnalytics(),
@@ -73,21 +77,21 @@ export default function ReportsPage() {
       ]);
 
       setSummaryData({
-        totalRevenue:
-          revenueSummaryRes?.totalRevenue || 0,
+  totalRevenue:
+    revenueSummaryRes?.totalRevenue || 0,
 
-        totalUsers:
-          usersSummaryRes?.totalUsers || 0,
+  totalUsers:
+    usersSummaryRes?.totalUsers || 0,
 
-        activeMembers:
-          membershipSummaryRes?.active || 0,
+  activeMembers:
+    userStatusRes?.data?.activeUsers || 0,
 
-        expiredMembers:
-          membershipSummaryRes?.expired || 0,
+  inactiveMembers:
+    userStatusRes?.data?.inactiveUsers || 0,
 
-        branches:
-          branchRes?.report || [],
-      });
+  branches:
+    branchRes?.report || [],
+});
 
       setAnalyticsData({
         revenue:
@@ -128,10 +132,9 @@ export default function ReportsPage() {
         min-h-screen
         transition-colors
         duration-300
-        ${
-          theme === "dark"
-            ? "text-white"
-            : "text-gray-900"
+        ${theme === "dark"
+          ? "text-white"
+          : "text-gray-900"
         }
       `}
     >
@@ -162,12 +165,12 @@ export default function ReportsPage() {
 
         {/* SUMMARY CARDS */}
         <ReportStats
-          revenue={summaryData.totalRevenue}
-          totalUsers={summaryData.totalUsers}
-          activeMembers={summaryData.activeMembers}
-          expiredMembers={summaryData.expiredMembers}
-          totalBranches={summaryData.branches.length}
-        />
+  revenue={summaryData.totalRevenue}
+  totalUsers={summaryData.totalUsers}
+  activeMembers={summaryData.activeMembers}
+  inactiveMembers={summaryData.inactiveMembers}
+  totalBranches={summaryData.branches.length}
+/>
 
         {/* REVENUE + MEMBERSHIP */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -190,10 +193,10 @@ export default function ReportsPage() {
             transition={{ duration: 0.45 }}
           >
             <MembershipCard
-              active={summaryData.activeMembers}
-              expired={summaryData.expiredMembers}
-              analytics={analyticsData.memberships}
-            />
+  active={summaryData.activeMembers}
+  inactive={summaryData.inactiveMembers}
+  analytics={analyticsData.memberships}
+/>
           </motion.div>
 
         </div>
@@ -224,19 +227,19 @@ export default function ReportsPage() {
         </div>
 
         {/* BRANCH */}
-<div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-6">
 
-  <motion.div
-    initial={{ opacity: 0, y: 15 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.45 }}
-  >
-    <BranchChart
-      branches={summaryData.branches}
-    />
-  </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+          >
+            <BranchChart
+              branches={summaryData.branches}
+            />
+          </motion.div>
 
-</div>
+        </div>
 
         {/* BRANCH TABLE */}
         <motion.div

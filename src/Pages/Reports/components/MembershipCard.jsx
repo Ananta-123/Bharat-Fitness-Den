@@ -9,7 +9,7 @@ import {
 
 export default function MembershipCard({
   active = 0,
-  expired = 0,
+  inactive = 0,
   analytics = [],
 }) {
   const { theme } = useTheme();
@@ -20,7 +20,7 @@ export default function MembershipCard({
           sum + Number(item.count || 0),
         0
       )
-    : active + expired;
+    : active + inactive;
 
   const activePercent =
     total > 0
@@ -29,7 +29,7 @@ export default function MembershipCard({
 
   const expiredPercent =
     total > 0
-      ? Math.round((expired / total) * 100)
+      ? Math.round((inactive / total) * 100)
       : 0;
 
   const getStatusClass = (status) => {
@@ -37,7 +37,7 @@ export default function MembershipCard({
       case "active":
         return "bg-green-500";
 
-      case "expired":
+      case "inactive":
         return "bg-red-500";
 
       case "cancelled":
@@ -229,7 +229,7 @@ export default function MembershipCard({
               }
             `}
           >
-            {expired}
+            {inactive}
           </h3>
 
           <p className="text-sm text-gray-500 mt-1">

@@ -26,6 +26,20 @@ const Navbar = ({ setMobileOpen }) => {
 
   const dropdownRef = useRef(null);
 
+  const hour =
+    new Date().getHours();
+
+  let greeting =
+    "Good Evening";
+
+  if (hour < 12) {
+    greeting =
+      "Good Morning";
+  } else if (hour < 17) {
+    greeting =
+      "Good Afternoon";
+  }
+
   // CLOSE DROPDOWN OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -152,7 +166,7 @@ const handleLogout = async () => {
                 sm:text-2xl
               "
             >
-              Dashboard
+              Admin Panel
             </h1>
 
             <p
@@ -166,7 +180,7 @@ const handleLogout = async () => {
                 sm:block
               "
             >
-              Welcome back, Admin
+              {greeting}, Welcome back, Admin
             </p>
           </div>
         </div>
